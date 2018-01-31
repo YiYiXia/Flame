@@ -1,2 +1,2 @@
 # Flame
-An physical eigen used to simulate water,snow,sand.etc
+An physical engine used to simulate water,snow,sand.etc
