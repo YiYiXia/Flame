@@ -88,28 +88,28 @@ void Simulator::calPressure()
 void Simulator::applyForces()
 {
 	vector<int> neighbors;
-	Vector2d f_i, x_i, x_j, dw;
-	double m_i, p_i, rho_i, p_j, rho_j;
+	Vector2d acc, x_i, x_j, dw;
+	double p_i, rho_i, m_j, p_j, rho_j;
 	for (int i = 0; i < particles.size(); i++)
 	{
 		/* internal forces between particles */
-		f_i = Vector2d(0, 0);
+		acc = Vector2d(0,0);
 		x_i = particles[i].x;
-		m_i = particles[i].m;
 		p_i = particles[i].p;
 		rho_i = particles[i].rho;
 		neighbors = grid.findNeighbors(particles, particles[i].x, 2 * dx);
 		for (int j = 0; j < neighbors.size(); j++)
 		{
 			x_j = particles[neighbors[j]].x;
+			m_j = particles[neighbors[j]].m;
 			p_j = particles[neighbors[j]].p;
 			rho_j = particles[neighbors[j]].rho;
 			dw = weightGradient( x_j - x_i, dx);
-			f_i += m_i * m_i * ( p_i/(rho_i*rho_i) + p_j/(rho_j*rho_j) ) * dw;
+			acc += m_j * ( p_i/(rho_i*rho_i) + p_j/(rho_j*rho_j) ) * dw;
 		}
 
 		/* external forces: gravity */
-		particles[i].v += (f_i/m_i + gravity) * dt;
+		particles[i].v += (acc + gravity) * dt;
 
 		/* advect position */
 		particles[i].x += particles[i].v * dt;
@@ -122,6 +122,7 @@ void Simulator::handleCollisions()
 	double vn;
 	for (int i = 0; i < particles.size(); i++)
 	{
+		normal = Vector2d(0,0);
 		if (particles[i].x(0) < 2 * dx)
 		{
 			normal = Vector2d(-1, 0);
