@@ -4,6 +4,7 @@
 Scene::Scene()
 {
 	num = 0;
+	source = false;
 }
 
 Scene::~Scene()
@@ -23,23 +24,28 @@ void Scene::Initial()
 	grid->initializeMass();
 	grid->calculateVolumes();
 }
+
+
 void Scene::Update()
 {
 	for (int i = 0; i < SOLVER_STEPS; i++)
 	{
-		
-		if (num % insert_time == 0 && num < endtime)
+		if (source)
 		{
+			if (num % insert_time == 0 && num < endtime)
+			{
 
-			ParticleCloud* bar2;
-			bar2 = new ParticleCloud();
-			bar2->InitialSample();
-			Grid*grid_temp;
-			grid_temp = new Grid(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), Vector2d(100, 100), bar2);
-			grid_temp->initializeMass();
-			grid_temp->calculateVolumes();
-			bar->merge(*grid_temp->obj);
+				ParticleCloud* bar2;
+				bar2 = new ParticleCloud();
+				bar2->InitialSample();
+				Grid*grid_temp;
+				grid_temp = new Grid(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), Vector2d(100, 100), bar2);
+				grid_temp->initializeMass();
+				grid_temp->calculateVolumes();
+				bar->merge(*grid_temp->obj);
+			}
 		}
+		
 		num++;
 		grid->initializeMass();
 		grid->initializeVelocities();
@@ -54,4 +60,17 @@ void Scene::Draw()
 	grid->glass->Draw();
 	bar->draw();
 	
+}
+
+void Scene::AddObject(ParticleType Type)
+{
+	ParticleCloud* bar2;
+	bar2 = new ParticleCloud();
+	//bar2->InitialSample();
+	bar2->AddParticles(Type);
+	Grid*grid_temp;
+	grid_temp = new Grid(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), Vector2d(100, 100), bar2);
+	grid_temp->initializeMass();
+	grid_temp->calculateVolumes();
+	bar->merge(*grid_temp->obj);
 }

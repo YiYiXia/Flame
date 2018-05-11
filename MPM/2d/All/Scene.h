@@ -11,8 +11,11 @@ public:
 	
 	Grid* grid;
 	ParticleCloud* bar;
+	bool source;
 	int num;
 	void Initial();
 	void Update();
 	void Draw();
+
+	void AddObject(ParticleType Type);
 };

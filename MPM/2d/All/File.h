@@ -19,6 +19,7 @@ public:
 	string getTime();
 	void FileOut(int frame, ParticleCloud cloud);
 	void FileIn(int frame, ParticleCloud &cloud);
+	void FileIn(int frame, vector<Vector2d> &pointlist);
 	void ParametersIn();
 	void Initial();
 private:

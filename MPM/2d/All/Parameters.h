@@ -1,5 +1,8 @@
 #pragma once
 #include <Eigen/Dense>
+#include<tbb/task_scheduler_init.h>
+#include<tbb/blocked_range.h>
+#include<tbb/parallel_for.h>
 extern int SOLVER_STEPS;
 const static int fps = 40;
 extern double DT;//每一步的时长CFL条件

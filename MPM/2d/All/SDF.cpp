@@ -5,15 +5,40 @@ SDF::SDF()
 {
 	omega = 0;
 	v_center = Vector2d::Zero();
+	
+}
+
+SDF::SDF(int x, int y)
+{
+	omega = 0;
+	v_center = Vector2d::Zero();
+	grid_sizex = 8*x;
+	grid_sizey = 8*y;
+	cell_sizex = 0.125;
+	cell_sizey = 0.125;
+	record = (double*)malloc(grid_sizex*grid_sizey * sizeof(double));
 }
 
 
 SDF::~SDF()
 {
-		
+
 }
 
-double SDF::SegmentSDF(double x, double y, double sx, double sy, double ex, double ey)
+
+
+double CircleSDF(double x, double y, double c_x, double c_y, double r)
+{
+	double d = sqrt((x - c_x)*(x - c_x) + (y - c_y)*(y - c_y));
+	return d - r;
+}
+
+double PlaneSDF(double x, double y, double px, double py, double nx, double ny)//平面
+{
+	return nx*(x - px) + ny*(y - py);
+}
+
+double SegmentSDF(double x, double y, double sx, double sy, double ex, double ey)
 {
 	double vx = x - sx, vy = y - sy;
 	double ux = ex - sx, uy = ey - sy;
@@ -22,6 +47,20 @@ double SDF::SegmentSDF(double x, double y, double sx, double sy, double ex, doub
 	return sqrt((x - px)*(x - px) + (y - py)*(y - py));
 }
 
+double CapsuleSDF(double x, double y, double sx, double sy, double ex, double ey, double r)
+{
+	return SegmentSDF(x, y, sx, sy, ex, ey) - r;
+}
+
+
+
+double BoxSDF(double x, double y, double cx, double cy, double theta, double sx, double sy) {
+	double costheta = cosf(theta), sintheta = sinf(theta);
+	double dx = fabs((x - cx) * costheta + (y - cy) * sintheta) - sx;
+	double dy = fabs((y - cy) * costheta - (x - cx) * sintheta) - sy;
+	double ax = fmaxf(dx, 0.0f), ay = fmaxf(dy, 0.0f);
+	return fminf(fmaxf(dx, dy), 0.0f) + sqrtf(ax * ax + ay * ay);
+}
 
 void SDF::Insert(double x, double y, Vector2d v)
 {
@@ -35,7 +74,7 @@ SDFinfo SDF::Distance(Vector2d point)
 	SDFinfo info;
 	double d = 10000;
 	int n, m;
-	for (int i = vertices.size() - 1, j = 0; j < vertices.size() ; i = j, j++)
+	for (int i = vertices.size() - 1, j = 0; j < vertices.size(); i = j, j++)
 	{
 		double l = SegmentSDF(point[0], point[1], vertices[i][0], vertices[i][1], vertices[j][0], vertices[j][1]);
 		if (d > l)
@@ -47,7 +86,7 @@ SDFinfo SDF::Distance(Vector2d point)
 		//d = (d > l) ? l : d;
 	}
 	int sign = Contains(point[0], point[1]);
-	info.distance= sign*d;
+	info.distance = sign*d;
 	info.num_s = m;
 	info.num_e = n;
 	return info;
@@ -147,7 +186,7 @@ void SDF::Initialize()
 		x += cx*s;
 		y += cy*s;
 
-		
+
 	}
 
 	center[0] = x / area;
@@ -172,7 +211,7 @@ void SDF::Update(double DT)
 	//更新中心位置
 	center = v_center*DT + center;
 	//
-	for(int i=0;i<vertices.size();i++)
+	for (int i = 0; i<vertices.size(); i++)
 	{
 
 		vertices[i] = center + Rotate(relate[i], omega*DT);
@@ -181,18 +220,20 @@ void SDF::Update(double DT)
 
 void SDF::Draw()
 {
+	double cellx = 5.0 / 400.0;
+	double celly = 5.0 / 400.0;
 	glColor3f(1, .3, 1);
 	glPointSize(1.5f);
-	glBegin(GL_POINTS);
+	/*glBegin(GL_POINTS);
 	for (int i = 0, l = vertices.size(); i<l; i++)
-		glVertex2f(vertices[i][0], vertices[i][1]);
-	glEnd();
+		glVertex2f(vertices[i][0]*cellx, vertices[i][1]*celly);
+	glEnd();*/
 	glLineWidth(2);
 	glBegin(GL_LINES);
 	for (int i = 0, j = vertices.size() - 1, l = vertices.size(); i < l; j = i++)
 	{
-		glVertex2f(vertices[j][0], vertices[j][1]);
-		glVertex2f(vertices[i][0], vertices[i][1]);
+		glVertex2f(vertices[j][0] * cellx, 5.0-vertices[j][1] * celly);
+		glVertex2f(vertices[i][0] * cellx, 5.0-vertices[i][1] * celly);
 	}
 
 	glEnd();
@@ -206,4 +247,33 @@ Vector2d SDF::Rotate(Vector2d p, double theata)
 	r(1, 0) = sin(theata);
 	r(1, 1) = cos(theata);
 	return r*p;
+}
+
+void SDF::GirdInitial()
+{
+	for (int i = 0; i < grid_sizex; i++)
+		for (int j = 0; j < grid_sizey; j++)
+		{
+			record[j*grid_sizex + i] = Distance(Vector2d(i*cell_sizex, j*cell_sizey)).distance;
+			//std::cout << i*cell_sizex<<" "<< j*cell_sizey << std::endl;
+		}
+			
+
+}
+
+double SDF::GridDistance(double x, double y)
+{
+	double s1 = x / cell_sizex;
+	double s2 = y / cell_sizey;
+	int i = s1;
+	int j = s2;
+	//std::cout << j << std::endl;
+	if (i<0 || i>=(grid_sizex - 1) || j<0 || j>=(grid_sizey - 1)) return 100.0;
+	int p1 = j*grid_sizex + i, p2 = j*grid_sizex + i + 1, p3 = (j + 1)*grid_sizex + i, p4 = (j + 1)*grid_sizex + i + 1;
+	//双线性插值
+	double r1, r2;
+	r1 = record[p2] * (s1 - i) + record[p1] * (1 + i - s1);
+	r2 = record[p4] * (s1 - i) + record[p3] * (1 + i - s1);
+	//std::cout << r1<<" "<<r2<<" "<<j <<" "<<y<< std::endl;
+	return r2*(s2 - j) + r1*(1 + j - s2);
 }

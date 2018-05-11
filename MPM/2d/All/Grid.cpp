@@ -51,10 +51,10 @@ void Grid::initializeMass()
 	//cout << cellsize[0] << "  " << cellsize[1] << endl;
 	for (int i = 0; i < obj->size; i++)
 	{
-		Particle& p = obj->particles[i];
-		p.grid_position[0] = (p.position[0] - start[0]) / cellsize[0];
-		p.grid_position[1] = (p.position[1] - start[1]) / cellsize[1];
-		double ox = p.grid_position[0], oy = p.grid_position[1];
+		Particle* p = obj->particles[i];
+		p->grid_position[0] = (p->position[0] - start[0]) / cellsize[0];
+		p->grid_position[1] = (p->position[1] - start[1]) / cellsize[1];
+		double ox = p->grid_position[0], oy = p->grid_position[1];
 		/*cout << ox << "  " << oy<<"  " << i << endl;*/
 		for (int idx = 0, y = oy - 1, y_end = y + 3; y <= y_end; y++)
 		{
@@ -63,14 +63,14 @@ void Grid::initializeMass()
 			{
 				double x_pos = ox - x,wx = Grid::bspline(x_pos),dx = Grid::bsplineSlope(x_pos);
 				double weight = wx*wy;
-				p.weights[idx] = weight;
-				p.weight_gradient[idx][0] = dx*wy;
-				p.weight_gradient[idx][1] = wx*dy;
-				p.weight_gradient[idx][0] /= cellsize[0];
-				p.weight_gradient[idx][1] /= cellsize[1];
+				p->weights[idx] = weight;
+				p->weight_gradient[idx][0] = dx*wy;
+				p->weight_gradient[idx][1] = wx*dy;
+				p->weight_gradient[idx][0] /= cellsize[0];
+				p->weight_gradient[idx][1] /= cellsize[1];
 
 				/*cout << y<<"  "<<x<<"  "<< size[0] << endl;*/
-				nodes[(int)(y*size[0] + x)].mass += weight*p.mass;
+				nodes[(int)(y*size[0] + x)].mass += weight*p->mass;
 			}
 		}
 		//if (i == 21 && p.position[0]>3.5)
@@ -91,17 +91,17 @@ void Grid::initializeVelocities()
 {
 	for (int i = 0; i < obj->size; i++)
 	{
-		Particle& p = obj->particles[i];
-		int ox = p.grid_position[0],oy = p.grid_position[1];
+		Particle* p = obj->particles[i];
+		int ox = p->grid_position[0],oy = p->grid_position[1];
 		for (int idx = 0, y = oy - 1, y_end = y + 3; y <= y_end; y++)
 		{
 			for (int x = ox - 1, x_end = x + 3; x <= x_end; x++, idx++)
 			{
-				double w = p.weights[idx];
+				double w = p->weights[idx];
 				if (w > BSPLINE_EPSILON)
 				{
 					int n = (int)(y*size[0] + x);
-					nodes[n].velocity += (p.velocity +3 / (cellsize[0] * cellsize[1])*p.B*(nodes[n].position - p.position)) * w * p.mass;
+					nodes[n].velocity += (p->velocity +3 / (cellsize[0] * cellsize[1])*p->B*(nodes[n].position - p->position)) * w * p->mass;
 					//nodes[n].velocity += (p.velocity) * w * p.mass;
 					nodes[n].active = true;
 				}
@@ -121,62 +121,33 @@ void Grid::calculateVolumes() const
 {
 	for (int i = 0; i<obj->size; i++)
 	{
-		Particle& p = obj->particles[i];
-		if (p.volume_check == true)
+		Particle* p = obj->particles[i];
+		if (p->volume_check == true)
 		{
 			continue;
 		}
-		p.volume_check == true;
-		int ox = p.grid_position[0],
-			oy = p.grid_position[1];
+		p->volume_check == true;
+		int ox = p->grid_position[0],
+			oy = p->grid_position[1];
 		//First compute particle density
-		p.density = 0;
+		p->density = 0;
 		for (int idx = 0, y = oy - 1, y_end = y + 3; y <= y_end; y++)
 		{
 			for (int x = ox - 1, x_end = x + 3; x <= x_end; x++, idx++)
 			{
-				double w = p.weights[idx];
+				double w = p->weights[idx];
 				if (w > BSPLINE_EPSILON)
 				{
-					p.density += w * nodes[(int)(y*size[0] + x)].mass;
+					p->density += w * nodes[(int)(y*size[0] + x)].mass;
 				}
 			}
 		}
-		p.density /= node_area;
-		p.volume = p.mass / p.density;
+		p->density /= node_area;
+		p->volume = p->mass / p->density;
 	}
 	
 }
 
-//ParticleCloud* Grid::InitVolume()
-//{
-//	for (int i = 0; i<obj->size; i++)
-//	{
-//		Particle& p = obj->particles[i];
-//		if (p.volume_check == true)
-//		{
-//			continue;
-//		}
-//		p.volume_check == true;
-//		int ox = p.grid_position[0],
-//			oy = p.grid_position[1];
-//		//First compute particle density
-//		p.density = 0;
-//		for (int idx = 0, y = oy - 1, y_end = y + 3; y <= y_end; y++)
-//		{
-//			for (int x = ox - 1, x_end = x + 3; x <= x_end; x++, idx++)
-//			{
-//				double w = p.weights[idx];
-//				if (w > BSPLINE_EPSILON)
-//				{
-//					p.density += w * nodes[(int)(y*size[0] + x)].mass;
-//				}
-//			}
-//		}
-//		p.density /= node_area;
-//		p.volume = p.mass / p.density;
-//	}
-//}
 
 void Grid::explicitVelocities(const Vector2d& gravity)
 {
@@ -192,22 +163,22 @@ void Grid::explicitVelocities(const Vector2d& gravity)
 
 	for (int i = 0; i<obj->size; i++)
 	{
-		Particle& p = obj->particles[i];
-		Matrix2d energy = p.energyDerivative();
+		Particle* p = obj->particles[i];
+		Matrix2d energy = p->energyDerivative();
 		
 		//cout << energy << endl<<endl;
-		int ox = p.grid_position[0],
-			oy = p.grid_position[1];
+		int ox = p->grid_position[0],
+			oy = p->grid_position[1];
 		for (int idx = 0, y = oy - 1, y_end = y + 3; y <= y_end; y++)
 		{
 			for (int x = ox - 1, x_end = x + 3; x <= x_end; x++, idx++)
 			{
-				double w = p.weights[idx];
+				double w = p->weights[idx];
 				if (w > BSPLINE_EPSILON)
 				{
 					int n = (int)(y*size[0] + x);
 					
-					nodes[n].velocity_new += energy*p.weight_gradient[idx];//体积在计算能量微分时已经乘上去了
+					nodes[n].velocity_new += energy*p->weight_gradient[idx];//体积在计算能量微分时已经乘上去了
 				}
 			}
 		}
@@ -240,26 +211,26 @@ void Grid::updateVelocities()
 {
 	for (int i = 0; i<obj->size; i++)
 	{
-		Particle& p = obj->particles[i];
-		Matrix2d& grad = p.velocity_gradient;
+		Particle* p = obj->particles[i];
+		Matrix2d& grad = p->velocity_gradient;
 		grad = Matrix2d::Zero();
 		Matrix2d  affine = Matrix2d::Zero();
 		Vector2d vp = Vector2d(0, 0);
 		//VISUALIZATION PURPOSES ONLY:
 		//Recompute density
-		p.density = 0;
-		p.velocity = Vector2d::Zero();
-		int ox = p.grid_position[0],
-			oy = p.grid_position[1];
+		p->density = 0;
+		p->velocity = Vector2d::Zero();
+		int ox = p->grid_position[0],
+			oy = p->grid_position[1];
 		//Vector2d temp = Vector2d::Zero();
 		for (int idx = 0, y = oy - 1, y_end = y + 3; y <= y_end; y++) {
 			for (int x = ox - 1, x_end = x + 3; x <= x_end; x++, idx++) {
-				double w = p.weights[idx];
+				double w = p->weights[idx];
 				if (w > BSPLINE_EPSILON)
 				{
 					GridNode &node = nodes[(int)(y*size[0] + x)];
-					grad += node.velocity_new*p.weight_gradient[idx].transpose();
-					p.density += w * node.mass;
+					grad += node.velocity_new*p->weight_gradient[idx].transpose();
+					p->density += w * node.mass;
 				//	if (i == 21 && p.position[0]>3.5)
 				//	{
 				//		cout << node.velocity[0]<<" "<< node.velocity[1] <<endl;
@@ -267,16 +238,16 @@ void Grid::updateVelocities()
 					//temp = temp + p.weight_gradient[idx];
 
 					vp += node.velocity_new*w;
-					affine = affine + w*node.velocity_new*(node.position - p.position).transpose();
+					affine = affine + w*node.velocity_new*(node.position - p->position).transpose();
 					//p.velocity += w *node.velocity_new;
 				}
 			}
 		}
 		
 		//VISUALIZATION: Update density
-		p.density /= node_area;
-		p.velocity = vp;
-		p.B = affine;
+		p->density /= node_area;
+		p->velocity = vp;
+		p->B = affine;
 		//if (i == 21 && p.position[0]>3.5)
 		//{
 			//cout << endl;
@@ -401,10 +372,10 @@ void Grid::collisionGrid()
 					double s = v_relate.dot(normal);
 					if (s <= 0.0)
 					{
-						Vector2d v_normal = s*normal;
-						//node.velocity_new = node.velocity_new - 2 * v_normal;
+						//Vector2d v_normal = s*normal;
 						//v_relate = (v_relate - v_normal)*STICKY;
-						//v_relate = Vector2d::Zero();
+						
+
 						if (normal[1]>0.95)
 						{
 							v_relate= Vector2d::Zero();
@@ -429,13 +400,13 @@ void Grid::collisionParticles() const
 {
 	for (int i = 0; i<obj->size; i++)
 	{
-		Particle& p = obj->particles[i];
-		Vector2d new_pos = p.position;
+		Particle* p = obj->particles[i];
+		Vector2d new_pos = p->position;
 		double d = glass->Distance(new_pos).distance;
 		if (d > -0.06)
 		{
-			p.Lambda = 1000.f;
-			p.Mu = 1000.0f;
+		/*	p->Lambda = 1000.f;
+			p->Mu = 1000.0f;*/
 			//cout << 1 << endl;
 			//p.velocity = Vector2d::Zero();
 			//p.position=p.position

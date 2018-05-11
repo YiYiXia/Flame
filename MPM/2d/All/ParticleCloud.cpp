@@ -22,9 +22,13 @@ void ParticleCloud::update()
 		{
 			cout << particles[i].velocity[0]<<"  "<< particles[i].velocity[1] << endl;
 		}*/
-		particles[i].updatePos();
-		particles[i].updateGradient();
-		particles[i].applyPlasticity();
+		Particle* p;
+		p = particles[i];
+		p->Update();
+
+		/*particles[i]->updatePos();
+		particles[i]->updateGradient();
+		particles[i]->applyPlasticity();*/
 	}
 	//cout << endl;
 }
@@ -33,7 +37,7 @@ void ParticleCloud::merge(ParticleCloud& other)
 {
 	size += other.size;
 	for (int i = 0; i < other.particles.size(); i++){
-		other.particles[i].index += p_num;
+		other.particles[i]->index += p_num;
 	}
 	p_num += other.size;
 	particles.reserve(size);
@@ -51,7 +55,7 @@ void ParticleCloud::copy(ParticleCloud other)
 	}
 }
 
-ParticleCloud* ParticleCloud::Insert(std::vector<Particle> points)
+ParticleCloud* ParticleCloud::Insert(std::vector<Particle*> points)
 {
 	ParticleCloud *obj = new ParticleCloud(points.size());
 
@@ -64,12 +68,13 @@ ParticleCloud* ParticleCloud::Insert(std::vector<Particle> points)
 
 void ParticleCloud::draw()
 {
-	glColor3f(0.1, 0.1, 1);
 	glPointSize(3);
 	glBegin(GL_POINTS);
 	for (int i = 0; i < size; i++)
 	{
-		glVertex2f(particles[i].position[0], particles[i].position[1]);
+		glColor3f(particles[i]->color[0], particles[i]->color[1], particles[i]->color[2]);
+		
+		glVertex2f(particles[i]->position[0], particles[i]->position[1]);
 	}
 	glEnd();
 }
@@ -80,8 +85,8 @@ void ParticleCloud::output()
 	double va,m;
 	for (int i = 0; i < size; i++)
 	{
-		va += particles[i].volume;
-		m += particles[i].mass;
+		va += particles[i]->volume;
+		m += particles[i]->mass;
 		//cout << particles[i].mass << endl;
 	}
 	cout << va << endl;
@@ -90,8 +95,8 @@ void ParticleCloud::output()
 
 void ParticleCloud::InitialSample()
 {
-	vector<Particle> points;
-	points = PossionSample(Vector2d(p_start_x, p_start_y), Vector2d(p_size_x, p_size_y), Vector2d(0.0, 0), r, iteratime);
+	vector<Particle*> points;
+	points = PossionSample(SAND,Vector2d(p_start_x, p_start_y), Vector2d(p_size_x, p_size_y), Vector2d(1.0, 0), r, iteratime);
 	size = points.size();
 	particles.reserve(size);
 	for (int i = 0; i < points.size(); i++)
@@ -100,6 +105,17 @@ void ParticleCloud::InitialSample()
 	}
 }
 
+void ParticleCloud::AddParticles(ParticleType type)
+{
+	vector<Particle*> points;
+	points = PossionSample(type, Vector2d(p_start_x, p_start_y), Vector2d(p_size_x, p_size_y), Vector2d(0.0, 0), r, iteratime);
+	size = points.size();
+	particles.reserve(size);
+	for (int i = 0; i < points.size(); i++)
+	{
+		particles.push_back(points[i]);
+	}
+}
 
 
 double ParticleCloud::random_number(double lo, double hi)
@@ -192,37 +208,49 @@ vector<Vector2d> ParticleCloud::PossionDisc(double r, double start_x, double sta
 }
 
 
-vector<Particle> ParticleCloud::PossionSample(Vector2d start, Vector2d end, Vector2d v, double r, int k)
+vector<Particle*> ParticleCloud::PossionSample(ParticleType type, Vector2d start, Vector2d end, Vector2d v, double r, int k)
 {
 	vector<Vector2d> set = PossionDisc(r, start[0], start[1], end[0], end[1], k);
 	while (set.size() < 20)
 	{
 		set = PossionDisc(r, start[0], start[1], end[0], end[1], k);
 	}
-	vector<Particle> points;
+	vector<Particle*> points;
 	for (int i = 0; i < set.size(); i++)
 	{
-		points.push_back(Particle(set[i], v, mass, p_num, lambda, mu));
+		Particle* p;
+
+		if (type == SAND)	p = new ParticleSand(set[i], v, mass, p_num, lambda, mu);
+		if (type == ELASTIC) p = new ParticleElastic(set[i], v, mass, p_num, 30000, 50000);
+		if (type == WATER) p = new ParticleWater(set[i], v, mass, p_num, 7, 60000);
+		//p = new ParticleElastic(set[i], v, mass, p_num, 30000, 30000);
+		//p = new ParticleWater(set[i], v, mass, p_num,7,1000);
+		//p = new Particle(set[i], v, mass, p_num, lambda, mu);
+		points.push_back(p);
 		p_num++;
 	}
 
 	return points;
 }
 
-vector<Particle> ParticleCloud::OrderSample(Vector2d start, Vector2d end, Vector2d size, Vector2d v)
+vector<Particle*> ParticleCloud::OrderSample(Vector2d start, Vector2d end, Vector2d size, Vector2d v)
 {
 	Vector2d cellsize;
 	cellsize[0] = (end[0] - start[0]) / (size[0] - 1);//格点横向长度
 	cellsize[1] = (end[1] - start[1]) / (size[1] - 1);//格点竖直方向长度
 	int length = size[0] * size[1];
-	vector<Particle> points(length);
+	vector<Particle*> points(length);
 
 	//如果不绘制格点，就不要加这些
 	for (int i = 0; i < size[0]; i++)
 	{
 		for (int j = 0; j < size[1]; j++)
 		{
-			points[(int)(j*size[0] + i)] = Particle(start + Vector2d(cellsize[0] * i, cellsize[1] * j), v, mass, p_num, lambda, mu);
+			Particle* p;
+			p = new ParticleElastic(start + Vector2d(cellsize[0] * i, cellsize[1] * j), v, mass, p_num, 30000, 30000);
+			//p = new ParticleSand(start + Vector2d(cellsize[0] * i, cellsize[1] * j), v, mass, p_num, lambda, mu);
+			//p = new Particle(start + Vector2d(cellsize[0] * i, cellsize[1] * j), v, mass, p_num, lambda, mu);
+			points[(int)(j*size[0] + i)] = p;
 			p_num++;
 			/*points[(int)(j*size[0] + i)].mass = 1;
 			points[(int)(j*size[0] + i)].velocity = Vector2d(0, 0);*/

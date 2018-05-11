@@ -12,12 +12,12 @@ class Particle
 public:
 	bool volume_check;
 	double volume, mass, density;
-	double alpha;
+	/*double alpha;
 	double delta_q;
 	double q;
 	double V_c;
 	double Lambda;
-	double Mu;
+	double Mu;*/
 	int index;
 	Vector2d position, velocity;
 	Matrix2d def_elastic;//弹性形变梯度
@@ -28,14 +28,19 @@ public:
 	Matrix2d B;//APIC中的仿射矩阵
 	Vector2d grid_position;
 	Vector2d weight_gradient[16];
+	Vector3d color;
 	double weights[16];//保存该点到周围16个格点的B样条权重值
 	Particle();
 	Particle(Vector2d pos, Vector2d vel, double mass, int num = 0, double lambda = 0,double mu = 0);
-	~Particle();
-	void updatePos();
+	virtual~Particle();
+
+	virtual Matrix2d energyDerivative() = 0;
+	virtual void Update() = 0;
+	double random_number(double lo, double hi);
+	/*void updatePos();
 	void updateGradient();
 	void applyPlasticity();
 	const Matrix2d energyDerivative();
 	Matrix2d Derivative(Matrix2d s);
-	Matrix2d project();
+	Matrix2d project();*/
 };

@@ -67,7 +67,8 @@ void File::FileOut(int frame, ParticleCloud cloud)
 	outfile << cloud.particles.size() << endl;
 	for (int i = 0; i < cloud.particles.size(); i++)
 	{
-		outfile << cloud.particles[i].position(0) << " " << cloud.particles[i].position(1) << endl;
+		outfile << cloud.particles[i]->position(0) << " " << cloud.particles[i]->position(1) << endl;
+		outfile << cloud.particles[i]->color(0) << " " << cloud.particles[i]->color(1) << " " << cloud.particles[i]->color(2) << endl;
 	}
 	outfile.close();
 }
@@ -89,17 +90,44 @@ void File::FileIn(int frame, ParticleCloud &cloud)
 
 	infile >> num;
 	cloud.particles.reserve(num);
+
 	cloud.size = num;
 	cloud.p_num = 0;
 	int size = 0;
 	while (infile.good())
 	{
-		infile >> cloud.particles[size].position(0);
-		infile >> cloud.particles[size].position(1);
-		cloud.particles[size].index = size;
+		cloud.particles[size] = new ParticleSand();
+		infile >> cloud.particles[size]->position(0);
+		infile >> cloud.particles[size]->position(1);
+		cloud.particles[size]->index = size;
 		size++;
 	}
 	cloud.p_num = size;
+	infile.close();
+}
+
+void File::FileIn(int frame, vector<Vector2d> &pointlist)
+{
+	double x, y;
+	ifstream infile;
+	string over = ".txt";
+	double val;
+	stringstream ss;
+	string str;
+	int num;
+	ss << frame;
+	ss >> str;
+	str += over;
+	infile.open(str);
+	if (!infile) return;
+	infile >> num;
+	while (infile.good())
+	{
+		infile >> x;
+		infile >> y;
+		pointlist.push_back(Vector2d(x, y));
+		//cout << x << " "<<y << endl;
+	}
 	infile.close();
 }
 
