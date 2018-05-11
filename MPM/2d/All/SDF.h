@@ -35,7 +35,7 @@ public:
 	int grid_sizex,grid_sizey;
 	double cell_sizex, cell_sizey;
 	double* record;
-
+	double x_min, x_max, y_min, y_max;
 	//SDF与其他
 	SDFinfo Distance(Vector2d point);//计算点到多边形的距离
 	Vector2d Gradient(double x, double y);//计算该点处的梯度

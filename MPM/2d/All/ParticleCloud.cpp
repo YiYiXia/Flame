@@ -95,20 +95,21 @@ void ParticleCloud::output()
 
 void ParticleCloud::InitialSample()
 {
-	vector<Particle*> points;
+	/*vector<Particle*> points;
 	points = PossionSample(SAND,Vector2d(p_start_x, p_start_y), Vector2d(p_size_x, p_size_y), Vector2d(1.0, 0), r, iteratime);
 	size = points.size();
 	particles.reserve(size);
 	for (int i = 0; i < points.size(); i++)
 	{
 		particles.push_back(points[i]);
-	}
+	}*/
 }
 
-void ParticleCloud::AddParticles(ParticleType type)
+
+void ParticleCloud::AddParticles(ParticleType type, SDF* polygon)
 {
 	vector<Particle*> points;
-	points = PossionSample(type, Vector2d(p_start_x, p_start_y), Vector2d(p_size_x, p_size_y), Vector2d(0.0, 0), r, iteratime);
+	points = PossionSample(type, polygon, Vector2d(0.0, 0), r, iteratime);
 	size = points.size();
 	particles.reserve(size);
 	for (int i = 0; i < points.size(); i++)
@@ -117,14 +118,16 @@ void ParticleCloud::AddParticles(ParticleType type)
 	}
 }
 
-
 double ParticleCloud::random_number(double lo, double hi)
 {
 	return lo + rand() / (double)(RAND_MAX / (hi - lo));
 }
 
-vector<Vector2d> ParticleCloud::PossionDisc(double r, double start_x, double start_y, double x_length, double y_length, int k)
+vector<Vector2d> ParticleCloud::PossionDisc(double r, SDF* polygon, int k)
 {
+	double x_length = polygon->x_max - polygon->x_min;
+	double y_length = polygon->y_max - polygon->y_min;
+
 	vector<Vector2d> cloud;
 	double grid_size = r / sqrt(2);
 	int x_size = ceil(x_length / grid_size);
@@ -140,11 +143,16 @@ vector<Vector2d> ParticleCloud::PossionDisc(double r, double start_x, double sta
 	double x, y;
 	double x0 = x_length*random_number(0, 1);
 	double y0 = y_length*random_number(0, 1);
+	while (polygon->Contains(polygon->x_min + x0, polygon->y_min + y0) != -1)
+	{
+		x0 = x_length*random_number(0, 1);
+		y0 = y_length*random_number(0, 1);
+	}
 	int x_index = floor(x0 / grid_size), y_index = floor(y0 / grid_size);          //确定出生点
 
 	Inside[x_size*y_index + x_index] = 1;
 	C[x_size*y_index + x_index] = Eigen::Vector2d(x0, y0);
-	cloud.push_back(Vector2d(x0 + start_x, y0 + start_y));
+	cloud.push_back(Vector2d(x0 + polygon->x_min, y0 + polygon->y_min));
 	active.push_back(x_size*y_index + x_index);
 	while (active.size() != 0)
 	{
@@ -170,8 +178,7 @@ vector<Vector2d> ParticleCloud::PossionDisc(double r, double start_x, double sta
 			y = y0 + R*sin(random_number(0, 1) * 2.0 * M_PI);
 			x_index = floor(x / grid_size);
 			y_index = floor(y / grid_size);
-			//if (x_index< 0 || x_index >= x_size || y_index < 0 || y_index >= y_size)
-			if (x< 0 || x > x_length || y < 0 || y > y_length) continue;
+			if (polygon->Contains(polygon->x_min + x, polygon->y_min + y) != -1) continue;
 			for (int u = x_index - 2; u <= x_index + 2; u++)
 			{
 				for (int v = y_index - 2; v <= y_index + 2; v++)
@@ -179,10 +186,8 @@ vector<Vector2d> ParticleCloud::PossionDisc(double r, double start_x, double sta
 					if (u< 0 || u >= x_size || v < 0 || v >= y_size) continue;
 					if (Inside[v*x_size + u] == 1)
 					{
-						if (C[v*x_size + u](0) < 0 || C[v*x_size + u](0) >= x_length || C[v*x_size + u](1) < 0 || C[v*x_size + u](1) >= y_length)	continue;
-						double d = sqrt(pow(x - C[v*x_size + u](0), 2) + pow(y - C[v*x_size + u](1), 2));
-						if (d < r)
-						{
+						double d = sqrtf(pow(x - C[v*x_size + u](0), 2) + pow(y - C[v*x_size + u](1), 2));
+						if (d < r) {
 							key2 = true;
 							break;
 						}
@@ -194,26 +199,26 @@ vector<Vector2d> ParticleCloud::PossionDisc(double r, double start_x, double sta
 				C[x_size*y_index + x_index] = Eigen::Vector2d(x, y);
 				Inside[x_size*y_index + x_index] = 1;
 				active.push_back(x_size*y_index + x_index);
-				cloud.push_back(Vector2d(x + start_x, y + start_y));
+				cloud.push_back(Vector2d(x + polygon->x_min, y + polygon->y_min));
 				//Cloud.push_back(Particle(Eigen::Vector2d(x + start_x, y + start_y)));
 				key1 = true;
 			}
 		}
-		if (key1 == false)
-		{
-			active.erase(iter);
-		}
+		if (key1 == false)	active.erase(iter);
+
 	}
+	cout << "Num of particle" << cloud.size() << endl;
 	return cloud;
 }
 
 
-vector<Particle*> ParticleCloud::PossionSample(ParticleType type, Vector2d start, Vector2d end, Vector2d v, double r, int k)
+
+vector<Particle*> ParticleCloud::PossionSample(ParticleType type, SDF* polygon, Vector2d v, double r, int k)
 {
-	vector<Vector2d> set = PossionDisc(r, start[0], start[1], end[0], end[1], k);
+	vector<Vector2d> set = PossionDisc(r, polygon, k);
 	while (set.size() < 20)
 	{
-		set = PossionDisc(r, start[0], start[1], end[0], end[1], k);
+		set = PossionDisc(r, polygon, k);
 	}
 	vector<Particle*> points;
 	for (int i = 0; i < set.size(); i++)
@@ -232,6 +237,7 @@ vector<Particle*> ParticleCloud::PossionSample(ParticleType type, Vector2d start
 
 	return points;
 }
+
 
 vector<Particle*> ParticleCloud::OrderSample(Vector2d start, Vector2d end, Vector2d size, Vector2d v)
 {

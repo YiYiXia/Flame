@@ -5,7 +5,10 @@ SDF::SDF()
 {
 	omega = 0;
 	v_center = Vector2d::Zero();
-	
+	x_min = 9999999;
+	x_max = -9999999;
+	y_min= 9999999;
+	y_max= -9999999;
 }
 
 SDF::SDF(int x, int y)
@@ -67,6 +70,11 @@ void SDF::Insert(double x, double y, Vector2d v)
 	Vector2d p = Vector2d(x, y);
 	vertices.push_back(p);
 	velocity.push_back(v);
+	x_min = (x > x_min) ? x_min : x;
+	x_max = (x < x_max) ? x_max : x;
+	y_min = (y > y_min) ? y_min : y;
+	y_max = (y < y_max) ? y_max : y;
+
 }
 
 SDFinfo SDF::Distance(Vector2d point)

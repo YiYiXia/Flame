@@ -62,12 +62,13 @@ void Scene::Draw()
 	
 }
 
-void Scene::AddObject(ParticleType Type)
+
+void Scene::AddObject(ParticleType Type, SDF* polygon)
 {
 	ParticleCloud* bar2;
 	bar2 = new ParticleCloud();
 	//bar2->InitialSample();
-	bar2->AddParticles(Type);
+	bar2->AddParticles(Type,polygon);
 	Grid*grid_temp;
 	grid_temp = new Grid(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), Vector2d(100, 100), bar2);
 	grid_temp->initializeMass();

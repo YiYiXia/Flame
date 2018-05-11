@@ -17,5 +17,5 @@ public:
 	void Update();
 	void Draw();
 
-	void AddObject(ParticleType Type);
+	void AddObject(ParticleType Type, SDF* polygon);
 };

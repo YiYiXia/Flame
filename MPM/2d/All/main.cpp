@@ -23,7 +23,20 @@ int main(int argc, char** argv)
 	sc.Initial();
 	player.Initial(argc, argv);
 	player.scene = &sc;
-	sc.AddObject(SAND);
+	SDF a;
+	a.Insert(1.3, 0.6);
+	a.Insert(2.3, 0.6);
+	a.Insert(2.3, 1.6);
+	a.Insert(1.3, 1.2);
+
+	sc.AddObject(SAND, &a);
+	SDF b;
+	b.Insert(3.3, 0.6);
+	b.Insert(4.3, 0.6);
+	b.Insert(4.3, 1.6);
+	b.Insert(3.3, 1.1);
+
+	sc.AddObject(SAND, &b);
 	while (1)
 	{
 		player.Render();

@@ -6,6 +6,7 @@
 #include"Parameters.h"
 #include <GL/freeglut.h>
 #include<time.h>
+#include"SDF.h"
 #include <Eigen/Dense>
 #include <list>
 using namespace std;
@@ -28,7 +29,8 @@ public:
 	ParticleCloud();
 	ParticleCloud(int cloud_size);
 	~ParticleCloud();
-	void AddParticles(ParticleType type);
+
+	void AddParticles(ParticleType type, SDF* polygon);
 	void InitialSample();
 	void update();
 	void merge(ParticleCloud& other);
@@ -40,7 +42,7 @@ public:
 	void output();
 private:
 	double random_number(double lo, double hi);
-	vector<Vector2d> PossionDisc(double r, double start_x, double start_y, double x_length, double y_length, int k);
-	vector<Particle*> PossionSample(ParticleType type,Vector2d start, Vector2d end, Vector2d v, double r, int k);
+	vector<Vector2d> PossionDisc(double r, SDF* polygon, int k);
+	vector<Particle*> PossionSample(ParticleType type, SDF* polygon, Vector2d v, double r, int k);
 	vector<Particle*> OrderSample(Vector2d start, Vector2d end, Vector2d size, Vector2d v);
 };
