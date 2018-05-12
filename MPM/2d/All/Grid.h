@@ -25,6 +25,8 @@ public:
 	Vector2d start, end, size, cellsize;
 	double Time;
 	SDF* glass;
+
+	vector<SDF*> polygon;//交互边界，物体
 	int nodes_length;//格点总数
 	double node_area;//格点的面积
 	GridNode* nodes;

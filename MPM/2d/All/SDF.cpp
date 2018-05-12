@@ -9,6 +9,7 @@ SDF::SDF()
 	x_max = -9999999;
 	y_min= 9999999;
 	y_max= -9999999;
+	type = Boundary;
 }
 
 SDF::SDF(int x, int y)

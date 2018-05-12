@@ -352,46 +352,48 @@ void Grid::collisionGrid()
 			if (node.active)
 			{
 				Vector2d new_pos = node.position + DT*node.velocity_new;
-				double d1 = glass->Distance(new_pos).distance;
-				//double d2 = glass->Distance(node.position).distance;
-				 
-				if (d1 > -0.05)
+				for (int i = 0; i < polygon.size(); i++)
 				{
-					//node.velocity_new = Vector2d::Zero();
-					Vector2d v_boundary = glass->SDFveloctiy(new_pos[0], new_pos[1]);
-					//cout << v_boundary[0] << " " << v_boundary[1] << endl;
-					Vector2d v_relate = node.velocity_new - v_boundary;
-					Vector2d normal = -glass->Gradient(new_pos[0], new_pos[1]);
-					/*if (v_relate.norm() > 90)
+					int co;//用来修改内外
+					if (polygon[i]->type == Boundary) co = 1;
+					if (polygon[i]->type == Object) co = -1;
+					double d1 = co*polygon[i]->Distance(new_pos).distance;
+					//double d2 = glass->Distance(node.position).distance;
+
+					if (d1 > -0.05)
 					{
+						//node.velocity_new = Vector2d::Zero();
+						Vector2d v_boundary = polygon[i]->SDFveloctiy(new_pos[0], new_pos[1]);
+						//cout << v_boundary[0] << " " << v_boundary[1] << endl;
+						Vector2d v_relate = node.velocity_new - v_boundary;
+						Vector2d normal = -co*polygon[i]->Gradient(new_pos[0], new_pos[1]);
+						/*if (v_relate.norm() > 90)
+						{
 						cout << y*size[0] + x << " " << v_relate[0] << "  " << v_relate[1] << endl;
-					}*/
-					
-					
-					
-					double s = v_relate.dot(normal);
-					if (s <= 0.0)
-					{
-						//Vector2d v_normal = s*normal;
-						//v_relate = (v_relate - v_normal)*STICKY;
-						
+						}*/
+						double s = v_relate.dot(normal);
+						if (s <= 0.0)
+						{
+							//Vector2d v_normal = s*normal;
+							//v_relate = (v_relate - v_normal)*STICKY;
+							if (normal[1]>0.95)
+							{
+								v_relate = Vector2d::Zero();
+							}
+							else
+							{
+								//cout << normal[0] << " " << normal[1] << endl;
+								Vector2d v_normal = s*normal;
+								//node.velocity_new = node.velocity_new - 2 * v_normal;
+								v_relate = (v_relate - v_normal)*STICKY;
+							}
+							node.velocity_new = v_relate + v_boundary;
 
-						if (normal[1]>0.95)
-						{
-							v_relate= Vector2d::Zero();
 						}
-						else 
-						{
-							//cout << normal[0] << " " << normal[1] << endl;
-							Vector2d v_normal = s*normal;
-							//node.velocity_new = node.velocity_new - 2 * v_normal;
-							v_relate = (v_relate - v_normal)*STICKY;
-						}
-						node.velocity_new = v_relate + v_boundary;
-						
+
 					}
-
 				}
+				
 			}
 		}
 	}

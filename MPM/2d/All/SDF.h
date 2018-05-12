@@ -6,7 +6,14 @@
 #include <GL/freeglut.h>
 
 using namespace Eigen;
-
+//物体、边界、源、汇
+enum SDFType
+{
+	Object,
+	Boundary,
+	Source,
+	Sinl
+};
 typedef struct
 {
 	double distance;
@@ -27,15 +34,18 @@ public:
 	std::vector<Vector2d> velocity;//存放顶点的速度
 	Vector2d v_center;
 	SDF(); 
-	SDF(int x, int y);
+	SDF(int x, int y);//为了搞光线追踪用的，后面需要调整
 	~SDF();
 	double omega;
-
+	SDFType type;//SDF的类型
 	//辅助计算SDF
 	int grid_sizex,grid_sizey;
 	double cell_sizex, cell_sizey;
 	double* record;
-	double x_min, x_max, y_min, y_max;
+	double x_min, x_max, y_min, y_max;//多变形的外接边框
+	
+
+
 	//SDF与其他
 	SDFinfo Distance(Vector2d point);//计算点到多边形的距离
 	Vector2d Gradient(double x, double y);//计算该点处的梯度

@@ -98,7 +98,7 @@ void ParticleSand::applyPlasticity()
 	double ahead = def_elastic.determinant();
 	V_c = V_c - log(ahead) + log(behind);
 	def_plastic = svd_v*T.inverse()*svd_s*svd_v.transpose()*def_plastic;
-	q = q + delta_q;
+	q = q + delta_q; 
 	double fai = h0 + (h1*q - h3)*exp(-h2*q);
 	//cout << fai << endl;
 	fai = fai*M_PI / 180.0;

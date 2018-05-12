@@ -24,19 +24,30 @@ int main(int argc, char** argv)
 	player.Initial(argc, argv);
 	player.scene = &sc;
 	SDF a;
-	a.Insert(1.3, 0.6);
-	a.Insert(2.3, 0.6);
-	a.Insert(2.3, 1.6);
-	a.Insert(1.3, 1.2);
+	a.Insert(1.3, 2.6);
+	a.Insert(2.3, 2.6);
+	a.Insert(2.3, 3.6);
+	a.Insert(1.3, 3.2);
 
 	sc.AddObject(SAND, &a);
-	SDF b;
-	b.Insert(3.3, 0.6);
-	b.Insert(4.3, 0.6);
-	b.Insert(4.3, 1.6);
-	b.Insert(3.3, 1.1);
-
-	sc.AddObject(SAND, &b);
+	//SDF b;
+	//b.Insert(1.3, 2.6);
+	//b.Insert(2.3, 2.6);
+	//b.Insert(2.3, 3.6);
+	//b.Insert(1.3, 3.2);
+	SDF c;
+	c.Insert(0.5, 0.5);
+	c.Insert(0.5, 4.5);
+	c.Insert(4.5, 4.5);
+	c.Insert(4.5, 0.5);
+	SDF d;
+	d.Insert(1.2, 1.6);
+	d.Insert(1.6, 2.0);
+	d.Insert(2.0, 1.6);
+	d.Insert(1.6, 1.2);
+	//sc.AddObject(ELASTIC, &b);
+	sc.AddPolygon(Boundary, &c);
+	sc.AddPolygon(Object, &d);
 	while (1)
 	{
 		player.Render();

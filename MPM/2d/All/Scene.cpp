@@ -75,3 +75,9 @@ void Scene::AddObject(ParticleType Type, SDF* polygon)
 	grid_temp->calculateVolumes();
 	bar->merge(*grid_temp->obj);
 }
+
+void Scene::AddPolygon(SDFType Type, SDF* polygon)
+{
+	polygon->type = Type;
+	grid->polygon.push_back(polygon);
+}
