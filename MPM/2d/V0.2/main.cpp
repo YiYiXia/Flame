@@ -37,22 +37,22 @@ int main(int argc, char** argv)
 	//player.scene = &sc;
 	Render2D render(700,700);
 	
-	/*SDF a;
+	SDF a;
 	a.Insert(2.050, 3.198);
 	a.Insert(2.950, 3.198);
 	a.Insert(2.950, 4.148);
 	a.Insert(2.050, 4.148);
 
-	sc.AddObject(WATER, &a);*/
+	sc.AddObject(WATER, &a);
 
 	//Vector2d v1(5, 0);
 	
-	SDF a;
+	/*SDF a;
 	a.Insert(0.25, 0.25);
 	a.Insert(1.95, 0.25);
 	a.Insert(1.95, 1.55);
 	a.Insert(0.25, 1.55);
-	sc.AddObject(SAND, &a);
+	sc.AddObject(SAND, &a);*/
 
 	//Vector2d v2(-5, 0);
 	//SDF b;
@@ -82,15 +82,20 @@ int main(int argc, char** argv)
 	glass.Initialize();
 	glass.omega = 0;*/
 
-	SDF d;
+	/*SDF d;
 	d.Insert(0.35, 1.75);
 	d.Insert(2.25, 1.75);
 	d.Insert(2.25, 2.05);
 	d.Insert(0.35, 2.05);
 	d.Initialize();
 	d.omega = M_PI / (1500 * DT);
-	sc.AddPolygon(Object, &d);
-
+	sc.AddPolygon(Object, &d);*/
+	SDF e;
+	e.Insert(2, 1.5);
+	e.Insert(2.5, 2);
+	e.Insert(3, 1.5);
+	e.Insert(2.5, 1); 
+	sc.AddPolygon(Object, &e);
 	//SDF e;
 	//e.Insert(2.418, 3.918);
 	//e.Insert(2.518, 3.918);

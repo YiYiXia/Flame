@@ -15,8 +15,15 @@ const int BSPLINE_RADIUS = 2;
 typedef struct GridNode {
 	double mass;
 	bool active;
-	Vector2d velocity, velocity_new;
+	bool collision;
+	Vector2d velocity, velocity_new, velocity_out;
 	Vector2d position;
+	Vector2d normal;
+	GridNode()
+	{
+		collision = false;
+		normal = Vector2d::Identity();
+	}
 } GridNode;
 
 class Grid 
@@ -40,6 +47,7 @@ public:
 	void updateVelocities();
 	void collisionGrid();
 	void collisionParticles() const;
+	void Friction();
 	void draw();
 	void output();
 	static double bspline(double x)

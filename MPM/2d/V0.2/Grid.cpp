@@ -195,6 +195,7 @@ void Grid::explicitVelocities(const Vector2d& gravity)
 			
 	}
 	collisionGrid();
+	Friction();
 }
 
 void Grid::updateVelocities()
@@ -219,7 +220,7 @@ void Grid::updateVelocities()
 				if (w > BSPLINE_EPSILON)
 				{
 					GridNode &node = nodes[(int)(y*size[0] + x)];
-					grad += node.velocity_new*p->weight_gradient[idx].transpose();
+					grad += node.velocity_out*p->weight_gradient[idx].transpose();
 					p->density += w * node.mass;
 				//	if (i == 21 && p.position[0]>3.5)
 				//	{
@@ -227,8 +228,8 @@ void Grid::updateVelocities()
 				//	}
 					//temp = temp + p.weight_gradient[idx];
 
-					vp += node.velocity_new*w;
-					affine = affine + w*node.velocity_new*(node.position - p->position).transpose();
+					vp += node.velocity_out*w;
+					affine = affine + w*node.velocity_out*(node.position - p->position).transpose();
 					//p.velocity += w *node.velocity_new;
 				}
 			}
@@ -341,6 +342,7 @@ void Grid::collisionGrid()
 			GridNode &node = nodes[idx];
 			if (node.active)
 			{
+				node.velocity_out = node.velocity_new;
 				Vector2d new_pos = node.position + DT*node.velocity_new;
 				for (int i = 0; i < polygon.size(); i++)
 				{
@@ -350,7 +352,7 @@ void Grid::collisionGrid()
 					else continue;//汇源不做碰撞处理
 					
 					double d1 = co*polygon[i]->Distance(new_pos).distance;
-					
+					double d2 = co*polygon[i]->Distance(node.position).distance;
 
 					if (d1 > -0.05)
 					{
@@ -366,20 +368,22 @@ void Grid::collisionGrid()
 						double s = v_relate.dot(normal);
 						if (s <= 0.0)
 						{
-
-							if (normal[1]>0.95)
-							{
-								v_relate = Vector2d::Zero();
-							}
-							else
-							{
-								//cout << normal[0] << " " << normal[1] << endl;
-								Vector2d v_normal = s*normal;
-								//node.velocity_new = node.velocity_new - 2 * v_normal;
-								v_relate = (v_relate - v_normal)*STICKY;
-							}
-							node.velocity_new = v_relate + v_boundary;
-
+							node.collision = true;
+							//if (normal[1]>0.95)
+							//{
+							//	v_relate = Vector2d::Zero();
+							//}
+							//else
+							//{
+							//	//cout << normal[0] << " " << normal[1] << endl;
+							//	Vector2d v_normal = s*normal;
+							//	//node.velocity_new = node.velocity_new - 2 * v_normal;
+							//	v_relate = (v_relate - v_normal)*STICKY;
+							//}
+							Vector2d v_normal = s*normal;
+							v_relate = (v_relate - v_normal);
+							node.velocity_out = v_relate + v_boundary;
+							node.normal = normal;
 						}
 
 					}
@@ -388,6 +392,36 @@ void Grid::collisionGrid()
 
 				}
 				
+			}
+		}
+	}
+}
+
+void Grid::Friction()
+{
+	for (int y = 0, idx = 0; y < size[1]; y++)
+	{
+		for (int x = 0; x < size[0]; x++, idx++)
+		{
+			GridNode &node = nodes[idx];
+			if (node.active)
+			{
+				if (node.collision == true)
+				{
+					Vector2d new_pos = node.position + DT*node.velocity_new;
+					Vector2d normal = node.normal;
+					//Vector2d tangent(-normal[1], normal[0]);
+
+					Vector2d v_tangent = node.velocity_out - normal*(normal.dot(node.velocity_out));
+					if (v_tangent.norm() < 1e-12) continue;
+					//Vector2d v_tangent = node.velocity_out.dot(tangent)*tangent - normal*(normal.dot(node.velocity_out));
+					//cout << 1 << endl;
+					double delta_v = (node.velocity_out - node.velocity_new).norm();
+					double v_t = v_tangent.norm();
+					Vector2d tangent = v_tangent / v_t;
+					//cout << v_t << endl << endl;
+					node.velocity_out = node.velocity_out - ((v_t < 0.3*delta_v) ? v_t : 0.3*delta_v)*tangent;
+				}
 			}
 		}
 	}

@@ -82,7 +82,7 @@ void Render2D::CanvasDraw(Scene* sc)
 			}
 			if (sc->grid->polygon[i]->type == Boundary)
 			{
-				cv::line(canvas, cv::Point(sx, sy), cv::Point(ex, ey), cv::Scalar(253, 185, 134), 12);
+				cv::line(canvas, cv::Point(sx, sy), cv::Point(ex, ey), cv::Scalar(253, 185, 134), 6);
 			}
 		}
 	}
