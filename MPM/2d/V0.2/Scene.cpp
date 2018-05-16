@@ -68,62 +68,62 @@ void Scene::Update()
 		grid->updateVelocities();
 		bar->update();
 		//原版
-		//for (int i = 0; i < grid->polygon.size(); i++)
-		//{
-		//	if (grid->polygon[i]->type == Object)	grid->polygon[i]->Update(DT);
-		//}
-
-		//SDF运动脚本，这个要想办法拿出来
-		if (endframes < frames)
-		{
-			key = true;
-			double high = -1, max = -1;
-			for (int i = 0; i < bar->particles.size(); i++)
-			{
-				high = (high > bar->particles[i]->position[1]) ? high : bar->particles[i]->position[1];
-				max = (max > bar->particles[i]->velocity.norm()) ? max : bar->particles[i]->velocity.norm();
-				if (bar->particles[i]->position[1] > 2 || bar->particles[i]->velocity.norm()>0.4)
-				{
-					key = false;
-				}
-			}
-			if (key == true)
-			{
-				startframes = frames;
-				endframes = frames + 1000;
-			}
-
-			//cout << high << " " << max << endl;
-		}
-
-		
 		for (int i = 0; i < grid->polygon.size(); i++)
 		{
 			if (grid->polygon[i]->type == Object)	grid->polygon[i]->Update(DT);
-			if (endframes > frames)
-			{
-				if (grid->polygon[i]->type == Boundary) 
-				{
-					grid->polygon[i]->omega= M_PI / (1000 * DT);
-					grid->polygon[i]->Update(DT);
-				}
-			}
-			else if(endframes > (frames-450*SOLVER_STEPS))
-			{
-				if (grid->polygon[i]->type == Boundary)
-				{
-					grid->polygon[i]->omega = 0;
-					grid->polygon[i]->Update(DT);
-				}
-				
-			}
-			else
-			{
-				startframes = frames;
-				endframes = frames + 1000;
-			}
-			
 		}
+
+		//SDF运动脚本，这个要想办法拿出来
+		//if (endframes < frames)
+		//{
+		//	key = true;
+		//	double high = -1, max = -1;
+		//	for (int i = 0; i < bar->particles.size(); i++)
+		//	{
+		//		high = (high > bar->particles[i]->position[1]) ? high : bar->particles[i]->position[1];
+		//		max = (max > bar->particles[i]->velocity.norm()) ? max : bar->particles[i]->velocity.norm();
+		//		if (bar->particles[i]->position[1] > 2 || bar->particles[i]->velocity.norm()>0.4)
+		//		{
+		//			key = false;
+		//		}
+		//	}
+		//	if (key == true)
+		//	{
+		//		startframes = frames;
+		//		endframes = frames + 1000;
+		//	}
+
+		//	//cout << high << " " << max << endl;
+		//}
+
+		//
+		//for (int i = 0; i < grid->polygon.size(); i++)
+		//{
+		//	if (grid->polygon[i]->type == Object)	grid->polygon[i]->Update(DT);
+		//	if (endframes > frames)
+		//	{
+		//		if (grid->polygon[i]->type == Boundary) 
+		//		{
+		//			grid->polygon[i]->omega= M_PI / (1000 * DT);
+		//			grid->polygon[i]->Update(DT);
+		//		}
+		//	}
+		//	else if(endframes > (frames-450*SOLVER_STEPS))
+		//	{
+		//		if (grid->polygon[i]->type == Boundary)
+		//		{
+		//			grid->polygon[i]->omega = 0;
+		//			grid->polygon[i]->Update(DT);
+		//		}
+		//		
+		//	}
+		//	else
+		//	{
+		//		startframes = frames;
+		//		endframes = frames + 1000;
+		//	}
+		//	
+		//}
 		frames++;
 	}
 	

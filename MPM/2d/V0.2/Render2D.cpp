@@ -76,7 +76,14 @@ void Render2D::CanvasDraw(Scene* sc)
 			int ex = sc->grid->polygon[i]->vertices[j][0] / cell_x;
 			int ey = height - sc->grid->polygon[i]->vertices[j][1] / cell_y;
 			//cout << sx << "  " << sy << " " << ex << " " << ey << endl;
-			cv::line(canvas, cv::Point(sx, sy), cv::Point(ex, ey), cv::Scalar(253, 185, 134),13);
+			if (sc->grid->polygon[i]->type == Object)
+			{
+				cv::line(canvas, cv::Point(sx, sy), cv::Point(ex, ey), cv::Scalar(253, 185, 134), 6);
+			}
+			if (sc->grid->polygon[i]->type == Boundary)
+			{
+				cv::line(canvas, cv::Point(sx, sy), cv::Point(ex, ey), cv::Scalar(253, 185, 134), 12);
+			}
 		}
 	}
 

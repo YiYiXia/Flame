@@ -347,9 +347,10 @@ void Grid::collisionGrid()
 					int co;//用来修改内外
 					if (polygon[i]->type == Boundary) co = 1;
 					else if (polygon[i]->type == Object) co = -1;
-					else continue;
+					else continue;//汇源不做碰撞处理
+					
 					double d1 = co*polygon[i]->Distance(new_pos).distance;
-					//double d2 = glass->Distance(node.position).distance;
+					
 
 					if (d1 > -0.05)
 					{
@@ -365,8 +366,7 @@ void Grid::collisionGrid()
 						double s = v_relate.dot(normal);
 						if (s <= 0.0)
 						{
-							//Vector2d v_normal = s*normal;
-							//v_relate = (v_relate - v_normal)*STICKY;
+
 							if (normal[1]>0.95)
 							{
 								v_relate = Vector2d::Zero();
@@ -383,6 +383,9 @@ void Grid::collisionGrid()
 						}
 
 					}
+
+
+
 				}
 				
 			}

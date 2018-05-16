@@ -96,7 +96,10 @@ void ParticleSand::applyPlasticity()
 	Matrix2d T = project();
 	def_elastic = svd_u*T*svd_v.transpose();
 	double ahead = def_elastic.determinant();
+	
 	V_c = V_c - log(ahead) + log(behind);
+	
+	
 	def_plastic = svd_v*T.inverse()*svd_s*svd_v.transpose()*def_plastic;
 	q = q + delta_q; 
 	double fai = h0 + (h1*q - h3)*exp(-h2*q);

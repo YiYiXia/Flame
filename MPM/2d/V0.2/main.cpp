@@ -16,14 +16,12 @@ using namespace tbb;
 
 int main(int argc, char** argv)
 {
-
-	//LinkList a;
-	//a.AddLNode(1);
-	//a.AddLNode(5);
-	//a.AddLNode(8);
-	//cout << a.Search(2) << endl;
-	//a.Delete(1);
-	//a.Print();
+	//SDF a;
+	//a.Insert(0.5, 0.5);
+	//a.Insert(1.0, 0.5);
+	//a.Insert(1.0, 1.0);
+	//a.Insert(0.5, 1.0);
+	//cout << a.Gradient(0.0,0.0) << endl;
 
 
 
@@ -39,29 +37,39 @@ int main(int argc, char** argv)
 	//player.scene = &sc;
 	Render2D render(700,700);
 	
-	SDF a;
+	/*SDF a;
 	a.Insert(2.050, 3.198);
 	a.Insert(2.950, 3.198);
 	a.Insert(2.950, 4.148);
 	a.Insert(2.050, 4.148);
 
+	sc.AddObject(WATER, &a);*/
+
+	//Vector2d v1(5, 0);
+	
+	SDF a;
+	a.Insert(0.25, 0.25);
+	a.Insert(1.95, 0.25);
+	a.Insert(1.95, 1.55);
+	a.Insert(0.25, 1.55);
 	sc.AddObject(SAND, &a);
 
+	//Vector2d v2(-5, 0);
 	//SDF b;
-	//b.Insert(1.3, 2.6);
-	//b.Insert(2.3, 2.6);
-	//b.Insert(2.3, 3.6);
-	//b.Insert(1.3, 3.2);
-	//sc.AddObject(ELASTIC, &b);
+	//b.Insert(3.3, 2.6);
+	//b.Insert(4.3, 2.6);
+	//b.Insert(4.3, 3.6);
+	//b.Insert(3.3, 3.6);
+	//sc.AddObject(ELASTIC, &b, v2);
 	
-	//SDF c;
-	//c.Insert(0.1, 0.5);
-	//c.Insert(0.1, 4.5);
-	//c.Insert(4.5, 4.5);
-	//c.Insert(4.5, 0.5);
-	//sc.AddPolygon(Boundary, &c);
+	SDF c;
+	c.Insert(0.2, 0.2);
+	c.Insert(0.2, 4.8);
+	c.Insert(4.8, 4.8);
+	c.Insert(4.8, 0.2);
+	sc.AddPolygon(Boundary, &c);
 	
-	SDF glass;
+	/*SDF glass;
 	glass.Insert(1.15, 0.75);
 	glass.Insert(2.38, 2.38);
 	glass.Insert(2.38, 2.62);
@@ -72,24 +80,24 @@ int main(int argc, char** argv)
 	glass.Insert(3.85, 0.75);
 	sc.AddPolygon(Boundary, &glass);
 	glass.Initialize();
-	glass.omega = 0;
+	glass.omega = 0;*/
 
-	/*SDF d;
-	d.Insert(1.2, 1.6);
-	d.Insert(1.6, 2.0);
-	d.Insert(2.0, 1.6);
-	d.Insert(1.6, 1.2);
+	SDF d;
+	d.Insert(0.35, 1.75);
+	d.Insert(2.25, 1.75);
+	d.Insert(2.25, 2.05);
+	d.Insert(0.35, 2.05);
 	d.Initialize();
-	d.omega = M_PI / (500 * DT);
-	sc.AddPolygon(Object, &d);*/
+	d.omega = M_PI / (1500 * DT);
+	sc.AddPolygon(Object, &d);
 
-	/*SDF e;
-	e.Insert(2.418, 3.918);
-	e.Insert(2.538, 3.918);
-	e.Insert(2.538, 4.018);
-	e.Insert(2.418, 4.018);
-	sc.AddSource(Source, &e,SAND,Vector2d(0,0));
-	sc.source = true;*/
+	//SDF e;
+	//e.Insert(2.418, 3.918);
+	//e.Insert(2.518, 3.918);
+	//e.Insert(2.518, 4.118);
+	//e.Insert(2.418, 4.118);
+	//sc.AddSource(Source, &e,SAND,Vector2d(1,0));
+	//sc.source = true;
 
 	//glutDisplayFunc(player.Render);
 	//glutIdleFunc(sc.Update);
@@ -103,8 +111,9 @@ int main(int argc, char** argv)
 		render.CanvasOutput(i);
 		render.CanvasClear();
 		//file.FileOut(i, *sc.bar);
+		//cout << i << endl;
 		i++;
-		Sleep(5);
+		//Sleep(5);
 	}
 	
 

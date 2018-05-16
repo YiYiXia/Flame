@@ -82,7 +82,7 @@ SDFinfo SDF::Distance(Vector2d point)
 {
 	SDFinfo info;
 	double d = 10000;
-	int n, m;
+	int n = vertices.size() - 1, m = 0;
 	for (int i = vertices.size() - 1, j = 0; j < vertices.size(); i = j, j++)
 	{
 		double l = SegmentSDF(point[0], point[1], vertices[i][0], vertices[i][1], vertices[j][0], vertices[j][1]);
@@ -116,7 +116,7 @@ Vector2d SDF::Gradient(double x, double y)
 	return Vector2d(nx, ny);
 }
 
-int SDF::Contains(double x, double y)
+int SDF::Contains(double x, double y)//
 {
 	int result = 1;
 	int len = vertices.size();

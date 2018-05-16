@@ -249,7 +249,7 @@ vector<Particle*> ParticleCloud::PossionSample(ParticleType type, SDF* polygon, 
 		Particle* p;
 
 		if (type == SAND)	p = new ParticleSand(set[i], v, mass, p_num, lambda, mu);
-		if (type == ELASTIC) p = new ParticleElastic(set[i], v, mass, p_num, 30000, 50000);
+		if (type == ELASTIC) p = new ParticleElastic(set[i], v, mass, p_num, 1000, 1000);
 		if (type == WATER) p = new ParticleWater(set[i], v, mass, p_num, 7, 60000);
 		if (type == SNOW) p = new ParticleSnow(set[i], v, mass, p_num, 20000, 20000, 10, 3.9e-2, 7.5e-3);
 		//p = new ParticleElastic(set[i], v, mass, p_num, 30000, 30000);

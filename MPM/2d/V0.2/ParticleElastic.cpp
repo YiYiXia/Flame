@@ -42,6 +42,10 @@ void ParticleElastic::Update()
 void ParticleElastic::updatePos()
 {
 	position += DT*velocity;
+	//if (velocity.norm() > 10)
+	//{
+	//	cout << index << " " << position[0] << " " << position[1] << endl;
+	//}
 }
 void ParticleElastic::updateGradient()
 {

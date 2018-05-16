@@ -12,8 +12,18 @@ enum SDFType
 	Object,
 	Boundary,
 	Source,
-	Sinl
+	Sink
 };
+
+//碰撞类型
+enum SDFCollisionType
+{
+	Sticky,
+	Separating,
+	Slipping,
+	None
+};
+
 typedef struct
 {
 	double distance;
@@ -47,9 +57,9 @@ public:
 
 
 	//SDF与其他
-	SDFinfo Distance(Vector2d point);//计算点到多边形的距离
-	Vector2d Gradient(double x, double y);//计算该点处的梯度
-	int Contains(double x, double y);//查看某点是否在多边形内部
+	SDFinfo Distance(Vector2d point);//计算点到多边形的距离，内部距离为负，外部距离为正
+	Vector2d Gradient(double x, double y);//计算该点处的梯度，一律指向多边形外
+	int Contains(double x, double y);//查看某点是否在多边形内部,内部为-1，外部为1
 	Vector2d SDFveloctiy(double x, double y);//获取临近点
 
 											 //SDF自身特性
