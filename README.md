@@ -21,4 +21,4 @@ A physical engine used to simulate water,snow,sand.etc
 Current developers:
  - [Yiming Xia](http://home.ustc.edu.cn/~byxym/) (project creator & developer)
  - [Ziheng Ge](http://home.ustc.edu.cn/~gzh1057/) (developer)
- - [Yunuo Chen](http://home.ustc.edu.cn/~yunuoch/) (developer)
+ - [Yunuo Chen](https://github.com/yunuoch/) (developer)
