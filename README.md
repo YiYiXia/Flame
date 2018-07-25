@@ -23,3 +23,4 @@ Current developers:
  - [Ziheng Ge](http://home.ustc.edu.cn/~gzh1057/) (developer)
  - [Yunuo Chen](https://github.com/yunuoch/) (developer)
  - [Binbin Liu](https://github.com/code-roamer)(developer)
+ - [Zizhou Huang](https://github.com/Huangzizhou) (developer)
