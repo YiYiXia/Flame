@@ -22,4 +22,4 @@ Current developers:
  - [Yiming Xia](http://home.ustc.edu.cn/~byxym/) (project creator & developer)
  - [Ziheng Ge](http://home.ustc.edu.cn/~gzh1057/) (developer)
  - [Yunuo Chen](https://github.com/yunuoch/) (developer)
- - [Binbin Liu](developer)
+ - [Binbin Liu](https://github.com/code-roamer)(developer)
