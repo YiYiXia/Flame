@@ -17,3 +17,8 @@ A physical engine used to simulate water,snow,sand.etc
  <img  width="300" height="300" src="https://github.com/YiYiXia/Flame/blob/master/MPM/18.05.23-Render.gif">
    </div>
 </div>
+
+Current developers:
+ - [Yiming Xia](http://home.ustc.edu.cn/~byxym/) (project creator & developer)
+ - [Ziheng Ge](http://home.ustc.edu.cn/~gzh1057/) (developer)
+ 
