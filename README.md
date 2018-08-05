@@ -4,6 +4,8 @@
 A physical engine used to simulate water,snow,sand.etc
 
 <img src="https://ci.appveyor.com/api/projects/status/32r7s2skrgm9ubva?svg=false" alt="Project Badge" width="100">
+| **Linux, Mac OS X** | **Windows** | Doc (WIP) | **Chat** |
+|---------------------|------------------|----------------|------------------|
 |[![Build Status](https://travis-ci.org/yuanming-hu/taichi.svg?branch=master)](https://travis-ci.org/yuanming-hu/taichi)|[![Build Status](https://ci.appveyor.com/api/projects/status/github/yuanming-hu/taichi?branch=master&svg=true)](https://ci.appveyor.com/project/IteratorAdvance/taichi)|[![Documentation Status](https://readthedocs.org/projects/taichi/badge/?version=latest)](http://taichi.readthedocs.io/en/latest/?badge=latest)|[![Join the chat at https://gitter.im/taichi-dev/Lobby](https://badges.gitter.im/taichi-dev/Lobby.svg)](https://gitter.im/taichi-dev/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)|
 
 <div align=center>
