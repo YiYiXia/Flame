@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\math\Function.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\math\LinkList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geometry\SDF.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\Particle.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\ParticleCloud.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\ParticleMPM.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\ParticleCloudMPM.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\Parameters.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\ParticleMPMElastic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\ParticleMPMSand.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\ParticleMPMWater.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\ParticleMPMSnow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scene\Scene.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\grid\GridMAC.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\grid\GridMPM.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\Camera2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\render\Render2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\common\File.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\physics\Line.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\solver\Solver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\solver\SolverMAC.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\solver\SolverMPM.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\solver\SolverMPMMulti.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\visual\UI2D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\Simulator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\math\Function.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geometry\SDF.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\Particle.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ParticleCloud.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ParticleMPM.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ParticleCloudMPM.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ParticleMPMElastic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ParticleMPMSand.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ParticleMPMSnow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\ParticleMPMWater.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\Scene.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\grid\GridMAC.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\grid\GridMPM.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\Camera2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\render\Render2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\File.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\physics\Line.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\solver\Solver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\solver\SolverMPMMulti.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\solver\SolverMPM.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\solver\SolverMAC.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\common\Parameters.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\visual\UI2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\Simulator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
