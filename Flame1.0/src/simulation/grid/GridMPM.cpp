@@ -227,28 +227,25 @@ void GridMPM::CollisionGrid()
 				node.velocity_out = node.velocity_new;
 				
 				Vector2d new_pos = node.position + DT*node.velocity_new;
-				for (int i = 0; i < polygon.size(); i++)
+				for (int i = 0; i < boundaryList.size(); i++)
 				{
-					int co;//用来修改内外
-					if (polygon[i]->type == Boundary) co = 1;
-					else if (polygon[i]->type == Object|| polygon[i]->type == Rivet) co = -1;
-					else continue;//汇源不做碰撞处理
-					double d1 = co*polygon[i]->Distance(new_pos).distance;
-					double d2 = co*polygon[i]->Distance(node.position).distance;
+					if (boundaryList[i]->type == Sink) continue;//don't handle collesion in sink
+					double d1 = boundaryList[i]->BoundaryDistance(new_pos);
+					double d2 = boundaryList[i]->BoundaryDistance(node.position);
 					//cout << polygon.size() << endl;
 					if (d1 > -0.05)
 					{
 						//cout << "yes" << endl;
-						Vector2d v_boundary = polygon[i]->SDFveloctiy(new_pos[0], new_pos[1]);
+						Vector2d v_boundary = boundaryList[i]->SDFveloctiy(new_pos[0], new_pos[1]);
 						Vector2d v_relate = node.velocity_new - v_boundary;
-						if (polygon[i]->type == Rivet)
+						if (boundaryList[i]->type == Rivet)
 						{
 							v_relate = Vector2d::Zero();
 							node.velocity_out = v_relate + v_boundary;
 							//cout << node.velocity_out << endl;
 							continue;
 						}
-						Vector2d normal = -co*polygon[i]->Gradient(new_pos[0], new_pos[1]);
+						Vector2d normal = -boundaryList[i]->BoundaryGradient(new_pos[0], new_pos[1]);
 						double s = v_relate.dot(normal);
 						if (s <= 0.0)
 						{
@@ -259,6 +256,38 @@ void GridMPM::CollisionGrid()
 							node.normal = normal;
 						}
 					}
+				//for (int i = 0; i < polygon.size(); i++)
+				//{
+				//	int co;//用来修改内外
+				//	if (polygon[i]->type == Boundary) co = 1;
+				//	else if (polygon[i]->type == Object|| polygon[i]->type == Rivet) co = -1;
+				//	else continue;//汇源不做碰撞处理
+				//	double d1 = co*polygon[i]->Distance(new_pos).distance;
+				//	double d2 = co*polygon[i]->Distance(node.position).distance;
+				//	//cout << polygon.size() << endl;
+				//	if (d1 > -0.05)
+				//	{
+				//		//cout << "yes" << endl;
+				//		Vector2d v_boundary = polygon[i]->SDFveloctiy(new_pos[0], new_pos[1]);
+				//		Vector2d v_relate = node.velocity_new - v_boundary;
+				//		if (polygon[i]->type == Rivet)
+				//		{
+				//			v_relate = Vector2d::Zero();
+				//			node.velocity_out = v_relate + v_boundary;
+				//			//cout << node.velocity_out << endl;
+				//			continue;
+				//		}
+				//		Vector2d normal = -co*polygon[i]->Gradient(new_pos[0], new_pos[1]);
+				//		double s = v_relate.dot(normal);
+				//		if (s <= 0.0)
+				//		{
+				//			node.collision = true;
+				//			Vector2d v_normal = s*normal;
+				//			v_relate = (v_relate - v_normal);
+				//			node.velocity_out = v_relate + v_boundary;
+				//			node.normal = normal;
+				//		}
+				//	}
 				}		
 			}
 		}
@@ -381,8 +410,6 @@ void GridMPM::ImplicitVelocities()
 }
 void GridMPM::RecomputeImplicitForces()
 {
-	//Vector2d temp;
-	//int key = 0;
 	for (int idx = 0; idx<nodes_length; idx++)
 	{
 		MPMGridNode& n = nodes[idx];
@@ -437,27 +464,29 @@ void GridMPM::RecomputeImplicitForces()
 
 void GridMPM::ParticleCheck()
 {
+	//cout <<"first:"<< obj->particles.size() << endl;
 	obj->particles.erase(std::remove_if(obj->particles.begin(), obj->particles.end(), [&](ParticleMPM* & p)
 	{
 		//cout << "check" << endl;
 		int co;
 		Vector2d pro = p->position;
-		for (int j = 0; j < polygon.size(); j++)
+		for (int j = 0; j < boundaryList.size(); j++)
 		{
 			//cout << "poly"<<" "<< polygon.size() << endl;
-			if (polygon[j]->type == Sink) co = 1;
-			else continue;
+			if (boundaryList[j]->type != Sink) continue;
 			//cout << "polypoly" << endl;
-			double d1 = co*polygon[j]->Distance(pro).distance;
-
+			double d1 = boundaryList[j]->BoundaryDistance(pro);
+			//cout << "23333" << d1 << endl;
 			if (d1 > -0.05)
 			{
-				free(p);
-				//cout << "in" << endl;
+				delete(p);
+				//cout << d1 << endl;
 				return true;
 			}
 			else
 			{
+				//if (d1 > -0.09) cout << d1 << endl;
+				
 				//cout << "out" << endl;
 				return false;
 			}
@@ -465,6 +494,7 @@ void GridMPM::ParticleCheck()
 		return false;
 	}), obj->particles.end());
 	obj->size = obj->particles.size();
+	//cout << "second:" << obj->particles.size() << endl;
 }
 
 void GridMPM::ParametersIn()
@@ -499,39 +529,39 @@ void GridMPM::ParametersIn()
 
 void GridMPM::GridCheck()//方程式解法的初始化
 {
-	active_length = 0;
-	active_list.clear();
-	for (int y = 0, idx = 0; y < size[1]; y++)
-	{
-		for (int x = 0; x < size[0]; x++, idx++)
-		{
-			MPMGridNode &node = nodes[idx];
-			Vector2d new_pos = node.position;
-			for (int i = 0; i < polygon.size(); i++)
-			{
-				int co;//用来修改内外
-				if (polygon[i]->type == Boundary) co = 1;
-				else if (polygon[i]->type == Object || polygon[i]->type == Rivet) co = -1;
-				else continue;//汇源不做碰撞处理
-				double d1 = co*polygon[i]->Distance(new_pos).distance;
-				if (d1 > -0.05)
-				{
-					node.type = BOUNDARY;
-				}
-				else if (node.active)
-				{
-					node.type = LIQUID;
-					node.s_index = active_length;
-					active_list.push_back(&node);
-					active_length++;
-				}
-				else
-				{
-					node.type = EMPTY;
-				}
-			}
-		}
-	}
+	//active_length = 0;
+	//active_list.clear();
+	//for (int y = 0, idx = 0; y < size[1]; y++)
+	//{
+	//	for (int x = 0; x < size[0]; x++, idx++)
+	//	{
+	//		MPMGridNode &node = nodes[idx];
+	//		Vector2d new_pos = node.position;
+	//		for (int i = 0; i < polygon.size(); i++)
+	//		{
+	//			int co;//用来修改内外
+	//			if (polygon[i]->type == Boundary) co = 1;
+	//			else if (polygon[i]->type == Object || polygon[i]->type == Rivet) co = -1;
+	//			else continue;//汇源不做碰撞处理
+	//			double d1 = co*polygon[i]->Distance(new_pos).distance;
+	//			if (d1 > -0.05)
+	//			{
+	//				node.type = BOUNDARY;
+	//			}
+	//			else if (node.active)
+	//			{
+	//				node.type = LIQUID;
+	//				node.s_index = active_length;
+	//				active_list.push_back(&node);
+	//				active_length++;
+	//			}
+	//			else
+	//			{
+	//				node.type = EMPTY;
+	//			}
+	//		}
+	//	}
+	//}
 }
 
 //求解p，相当于连续介质中的A

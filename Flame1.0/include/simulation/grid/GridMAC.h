@@ -3,6 +3,10 @@
 #include<vector>
 #include"../../common/Parameters.h"
 #include"../../physics/ParticleCloudMPM.h"
+#include"../../geometry/SDF.h"
+#include"../../geometry/SDFObject.h"
+#include"../../physics/ParticleCloudMPM.h"
+#include"../../math/Function.h"
 
 using namespace std;
 using namespace Eigen;
@@ -40,7 +44,10 @@ public:
 	GridMAC(Vector2d pos, Vector2d dims, Vector2d cells, ParticleCloudMPM* object);
 	~GridMAC();
 	MACGridNode* nodes;
-	vector<SDF*> polygon;//交互边界，物体
+
+	vector<SDFBoundary*> boundaryList;
+	vector<SDFObject*> objectList;
+
 	Vector2d start, end, size, cellsize;//start是格点中心的起始位置、
 	int nodes_length;//格点总数
 	double *velocity_u;//交错辅助计算网格

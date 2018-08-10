@@ -90,6 +90,7 @@ void ParticleMPMSnow::MPMUpdate()
 	UpdateGradient();
 	ApplyPlasticity();
 }
+
 void ParticleMPMSnow::DeltaForce()
 {
 	Matrix2d del_elastic = DT*delta_v*def_elastic;

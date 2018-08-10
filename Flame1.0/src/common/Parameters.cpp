@@ -35,6 +35,7 @@ double VIEW_HEIGHT;
 int WINDOW_WIDTH;
 int WINDOW_HEIGHT;
 double VIEW_WIDTH;
+int Flame_Frames;
 
 void ParametersInput()
 {
@@ -51,6 +52,7 @@ void ParametersInput()
 	string st;
 	int num;
 	infile >> st;
+	//todo:possion parameters should not be here.
 	while (infile.good())
 	{
 		if (st.compare("Gx") == 0){

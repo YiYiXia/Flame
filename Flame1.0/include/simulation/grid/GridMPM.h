@@ -6,6 +6,7 @@
 #include <fstream>  
 #include<sstream>
 #include"../../geometry/SDF.h"
+#include"../../geometry/SDFObject.h"
 #include"../../physics/ParticleCloudMPM.h"
 #include"../../math/Function.h"
 using namespace std;
@@ -48,7 +49,11 @@ public:
 	Vector2d start, end, size, cellsize;
 	double Time;
 	double Friction_c;//摩擦系数，这一项暂放在这
-	vector<SDF*> polygon;//交互边界，物体
+	//此处需要修改为具体sdf类型，SDFBoundary
+	//vector<SDF*> polygon;
+	vector<SDFBoundary*> boundaryList;
+	vector<SDFObject*> objectList;
+
 	int nodes_length;//格点总数
 	int active_length;//记录稀疏矩阵大小
 	vector<MPMGridNode*> active_list;//存放待求解的格点

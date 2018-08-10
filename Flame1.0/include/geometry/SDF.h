@@ -3,6 +3,7 @@
 #include<Eigen/Dense>
 #include<iostream>
 #include<vector>
+#include"../../include/math/Function.h"
 
 using namespace Eigen;
 using namespace std;
@@ -14,16 +15,11 @@ enum SDFType
 	Boundary,
 	Source,
 	Sink,
-	Rivet
+	Rivet,
+	Nothing
 };
 
-//采样方式
-enum SampleType
-{
-	BOUNDSDF_P,
-	PICTURE_P,
-	BOUNDSDF_O
-};
+
 
 //碰撞类型
 enum SDFCollisionType
@@ -44,76 +40,139 @@ typedef struct SDFMoveInfo
 	double omega;//角速度
 }SDFMoveInfo;
 
-//存活信息，什么时候出现、消失
-typedef struct SDFLiveInfo 
-{
-	int AppearTime;
-}SDFLiveInfo;
 
 //点到多边形的信息
 typedef struct SDFinfo
 {
 	double distance;
-	int num_s;//与之最近的线段编号
+	int num_s;                           //与之最近的线段编号
 	int num_e;
 } SDFinfo;
 
 double CircleSDF(double x, double y, double c_x, double c_y, double r);
-double PlaneSDF(double x, double y, double px, double py, double nx, double ny);//平面
+double PlaneSDF(double x, double y, double px, double py, double nx, double ny);
 double SegmentSDF(double x, double y, double sx, double sy, double ex, double ey);
 double CapsuleSDF(double x, double y, double sx, double sy, double ex, double ey, double r);
 double BoxSDF(double x, double y, double cx, double cy, double theta, double sx, double sy);
 
+/********************************************************
+	*Class name:       SDF
+	*Usage:            Geometry object in scene
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
 class SDF
 {
 public:
-	std::vector<SDFMoveInfo> move_info;
-	std::vector<Vector2d> vertices;//存放多边形顶点
-	std::vector<Vector2d> velocity;//存放顶点的速度
-	Vector2d v_center, v_center_new;
-	Vector2d v_acceleration, v_acceleration_new;
 	SDF(); 
-	SDF(int t ,SampleType stype=BOUNDSDF_P, string name = " ");//设置出现时间
-	SDF(int x, int y);//为了搞光线追踪用的，后面需要调整
 	~SDF();
-
-	Vector2d center;//纯几何图形的质心位置 
-	double mass;
-	double omega;
-	bool move;
-	SDFType type;//SDF的类型
-	SDFLiveInfo Live_Info;
-	SampleType Sample_Type;
-	string Mat_name;
-
-
-	//辅助计算SDF
-	int grid_sizex,grid_sizey;
-	double cell_sizex, cell_sizey;
-	double* record;
-	double x_min, x_max, y_min, y_max;//多边形的外接边框
-	Vector3d Color;
-
-	int sample_time;
-	bool sample_check;
-	//SDF与其他
-	SDFinfo Distance(Vector2d point);//计算点到多边形的距离，内部距离为负，外部距离为正
-	Vector2d Gradient(double x, double y);//计算该点处的梯度，一律指向多边形外
-	int Contains(double x, double y);//查看某点是否在多边形内部,内部为-1，外部为1
-	Vector2d SDFveloctiy(double x, double y);//获取临近点
-
-	//SDF自身特性
-	void Insert(double x, double y, Vector2d v = Vector2d::Zero());//新增一个顶点
-	void AddControl(SDFMoveInfo info);//添加SDF的运动信息
-	void Control(int time);//根据控制信息，改变运动信息
-	void Update(double DT);//更新多边形顶点位置、速度 
-	void Initialize();
-	void GirdInitial();
-	double GridDistance(double x, double y);
-	Vector2d Rotate(Vector2d p, double theata);
-private:
 	
-	
+	std::vector<SDFMoveInfo> moveInfo;                //the move information of SDF,use it to control SDF moving
+	std::vector<Vector2d> vertices;                   //vertices coordinate in SDF
+	std::vector<Vector2d> verticeVelocity;            //vertice velocity in SDF
+	Vector2d barycenterVelocity;                      //barycenter veloctiy
+	Vector2d barycenter;                              //barycenter coordinate
+	double omega;                                     //omega of the SDF rotate
+	bool move;                                        //whether the SDF should move or not
+	SDFType type;                                     //the type of SDF
+	string sdfName;                                   //the name of SDF
+	int appearTime;                                   //the time in which the SDF appear
+	double x_min, x_max, y_min, y_max;                //the bounding box of SDF
+	Vector3d Color;                                   //the color of SDF
 
+/********************************************************
+	*Function name:    Distance
+	*Usage:            Calculate the distance between a point to SDF.
+	*Input:            point.
+	*Output:           distance(inside -,outside +),the nearest side.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	SDFinfo Distance(Vector2d point);
+
+/********************************************************
+	*Function name:    Gradient
+	*Usage:            Calculate the gradient vector at the point from signed distance field.
+	*Input:            point.
+	*Output:           the gradient vector(point outside the polygon).
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	Vector2d Gradient(double x, double y);
+
+/********************************************************
+	*Function name:    Contains
+	*Usage:            Check  whether the point is inside or not.
+	*Input:            point.
+	*Output:           inside:-1 outside:1
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	int Contains(double x, double y);
+
+/********************************************************
+	*Function name:    SDFveloctiy
+	*Usage:            Calculate the velocity of the point which is 
+	                   nearest from the input point within SDF boundary.
+	*Input:            point.
+	*Output:           velocity.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	Vector2d SDFveloctiy(double x, double y);
+
+/********************************************************
+	*Function name:    Insert
+	*Usage:            Insert a vertice into polygon.
+	*Input:            vertice coordinate,vertice velocity.
+	*Output:           none.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	void Insert(double x, double y, Vector2d v = Vector2d::Zero());
+
+/********************************************************
+	*Function name:    AddControl
+	*Usage:            Add a move control information into SDF,just like a move script.
+	*Input:            SDFMoveInfo include when start,when end,omega and barycenter velocity.
+	*Output:           none.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	void AddControl(SDFMoveInfo info);
+
+/********************************************************
+	*Function name:    Control
+	*Usage:            Use the control information to control SDF move
+	*Input:            time(frame number)
+	*Output:           none.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	void Control(int time);
+
+/********************************************************
+	*Function name:    CalculateBarycenter
+	*Usage:            Calculate Barycenter Coordinate
+	*Input:            none.
+	*Output:           none.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	void CalculateBarycenter();
+
+/********************************************************
+	*Function name:    GeometryUpdate
+	*Usage:            Use the move information to update SDF geometry information,
+	                   such as move,rotate,etc
+	*Input:            DT
+	*Output:           none.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	void GeometryUpdate(double DT);
+
+/********************************************************
+	*Function name:    SDFUpdate(virtual)
+	*Usage:            Update different SDF with different method.
+	*Input:            DT
+	*Output:           none.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	virtual void SDFUpdate(double DT) = 0;
 };
+
+
+
+
 

@@ -24,8 +24,8 @@ Line::~Line()
 
 void Line::CalculateForce()
 {
-	start_p = start->center;
-	end_p = end->center;
+	start_p = start->barycenter;
+	end_p = end->barycenter;
 	start_di = (end_p - start_p).normalized();
 	end_di = -start_di;
 	length = (end_p - start_p).norm();

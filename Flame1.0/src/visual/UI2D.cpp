@@ -30,7 +30,7 @@ UI2D::~UI2D()
 {
 }
 
-void UI2D::Show(cv::Mat* canvas)
+void UI2D::UIShow(cv::Mat* canvas)
 {
 	cv::imshow("1", *canvas);
 	cv::waitKey(5);

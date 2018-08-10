@@ -16,3 +16,4 @@ double LerpLine(double s,double e,double w);
 Vector2d GradBiLerp(double v00, double v10, double v01, double v11, double fx, double fy);
 Vector2d AffineLerp(Vector2d p, double *a, int width);
 double SmoothKernel(double r, double h);
+Vector2d Rotate(Vector2d p, double theata);

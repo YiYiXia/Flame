@@ -38,18 +38,21 @@
     <ClInclude Include="include\scene\Scene.h" />
     <ClInclude Include="include\simulation\grid\GridMAC.h" />
     <ClInclude Include="include\simulation\grid\GridMPM.h" />
+    <ClInclude Include="include\simulation\ParticleSample.h" />
     <ClInclude Include="include\simulation\Simulator.h" />
     <ClInclude Include="include\simulation\solver\Solver.h" />
     <ClInclude Include="include\simulation\solver\SolverMAC.h" />
     <ClInclude Include="include\simulation\solver\SolverMPM.h" />
     <ClInclude Include="include\simulation\solver\SolverMPMMulti.h" />
     <ClInclude Include="include\visual\UI2D.h" />
+    <ClInclude Include="include\geometry\SDFObject.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="samples\MAC.cpp" />
     <ClCompile Include="src\common\File.cpp" />
     <ClCompile Include="src\common\Parameters.cpp" />
     <ClCompile Include="src\geometry\SDF.cpp" />
+    <ClCompile Include="src\geometry\SDFObject.cpp" />
     <ClCompile Include="src\math\Function.cpp" />
     <ClCompile Include="src\physics\Line.cpp" />
     <ClCompile Include="src\physics\ParticleMPMElastic.cpp" />
@@ -65,11 +68,12 @@
     <ClCompile Include="src\scene\Scene.cpp" />
     <ClCompile Include="src\simulation\grid\GridMAC.cpp" />
     <ClCompile Include="src\simulation\grid\GridMPM.cpp" />
+    <ClCompile Include="src\simulation\ParticleSample.cpp" />
     <ClCompile Include="src\simulation\Simulator.cpp" />
-    <ClCompile Include="src\simulation\solver\SolverMPMMulti.cpp" />
+    <ClCompile Include="src\simulation\solver\SolverMAC.cpp" />
     <ClCompile Include="src\simulation\solver\SolverMPM.cpp" />
     <ClCompile Include="src\simulation\solver\Solver.cpp" />
-    <ClCompile Include="src\simulation\solver\SolverMAC.cpp" />
+    <ClCompile Include="src\simulation\solver\SolverMPMMulti.cpp" />
     <ClCompile Include="src\visual\UI2D.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

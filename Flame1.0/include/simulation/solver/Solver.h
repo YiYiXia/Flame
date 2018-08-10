@@ -1,23 +1,31 @@
 #pragma once
 #include"../../scene/Scene.h"
-#include"../grid/GridMPM.h"
-#include"../grid/GridMAC.h"
+#include"../../physics/Particle.h"
 
-//求解器积分类型，隐式，显式（还需要将半隐式的参数脱出）
-enum SolverType
+enum IntegralType
 {
 	EXPLICIT,
 	IMPLICIT
-};
+};//Integral type such as explicit and implicit
+
+enum SolverType
+{
+	MPM,
+	MPMMulti,
+	MAC
+};//Solver tpye for different algorithm
+
 class Solver
 {
 public:
 	Solver();
 	~Solver();
-	Scene* scene;
-	int frames;
-	SolverType Type;//记录求解器显隐式类型
-	void SceneControl();//负责根据多边形运动信息，控制其运动，
-	virtual void Initial(SolverType SType) = 0;
-	virtual void Update() = 0;
+	IntegralType Type;//记录求解器显隐式类型
+	vector<Particle*> particleList;
+	vector<SDFObject*> *objectList;            //list of Object in scene
+	vector<SDFBoundary*> *boundaryList;        //list of Boundary in scene
+	vector<SDFInfo>* objList;
+	virtual void SolverInitial(IntegralType SType, vector<SDFInfo>* SDFlist) = 0;
+	virtual void SolverUpdate() = 0;
+	virtual void AddParticle(vector<Vector2d> *particleList, ParticleType particleType, Vector2d particleVelocity, Vector3d particleColor) = 0;//Add particle into scene
 };

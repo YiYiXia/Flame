@@ -94,3 +94,13 @@ double SmoothKernel(double r, double h)
 {
 	return std::max(pow(1.0 - r / (h * h), 3.0), 0.0);
 }
+
+Vector2d Rotate(Vector2d p, double theata)
+{
+	Matrix2d r;
+	r(0, 0) = cos(theata);
+	r(0, 1) = -sin(theata);
+	r(1, 0) = sin(theata);
+	r(1, 1) = cos(theata);
+	return r*p;
+}

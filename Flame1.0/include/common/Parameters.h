@@ -18,8 +18,23 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 * SOFTWARE.
 */
+
+/********************************************************
+*Class name:       
+*Usage:            
+*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+
+/********************************************************
+*Function name:    
+*Usage:            
+*Input:            
+*Output:           
+*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
 #pragma once
-#include <Eigen/Dense>
+#include<Eigen/Dense>
+#include<vector>
 #define M_PI 3.14159265358979
 
 extern int SOLVER_STEPS;                //Simulation parameter:the simulate time per frame
@@ -33,5 +48,15 @@ extern int WINDOW_HEIGHT;               //UI parameter:Sizey of show image
 extern double  r;                       //Possion disk parameter:sample radius
 extern int iteratime;                   //Possion disk parameter:sample iteration times
 extern int endtime;                     //Source parameter:the time the source stop
+extern int Flame_Frames;                //Scene parameter:the num of frames right now
 
-void ParametersInput();                 //Input parameters from config filess
+/********************************************************
+	*Function name:    ParametersInput.
+	*Usage:            Read data from config files to initial some parameters.
+	*Input:            None.
+	*Output:           None.
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+void ParametersInput();
+
+typedef std::vector<Eigen::Vector2d> PointList;

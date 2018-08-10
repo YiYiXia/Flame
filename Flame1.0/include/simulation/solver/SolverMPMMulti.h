@@ -1,5 +1,6 @@
 #pragma once
 #include"Solver.h"
+#include"../grid/GridMPM.h"
 
 class SolverMPMMulti
 	:public Solver
@@ -13,10 +14,12 @@ public:
 	GridMPM* grid_w;
 	double *cohesion_w; 
 	int Resolution;
-	void Initial(SolverType SType);
-	void Update();
-	void PointListCheck();
-	void SourceCheck();
+	void SolverInitial(IntegralType SType, vector<SDFInfo>* SDFlist);
+	void SolverUpdate();
+	void AddParticle(vector<Vector2d> *particleList, ParticleType particleType, Vector2d particleVelocity, Vector3d particleColor);
 	void MomentaExchange();
 	void Saturation();
+private:
+	void InformationReturn();
+	
 };

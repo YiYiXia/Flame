@@ -158,9 +158,9 @@ Result Render2D::SceneDistance(double x, double y)
 	Result l1 = { CircleSDF(x,y,270,-160,50),0.0f,0.0f,{ 2000.0f,2000.0f,2000.0f },BLACK };
 
 	//Result l3 = { CircleSDF(x,y,lx2,ly2,50),0.0f,0.0f,{ 2000.0f,2000.0f,2000.0f },BLACK };
-	//Result r6 = { sdf->Distance(Vector2d(x,y)).distance,0.3f,1.5f,BLACK,{ 0.002,0.2,0.002 } };
+	Result r6 = { sdf->Distance(Vector2d(x,y)).distance,0.3f,1.5f,BLACK,{ 0.002,0.2,0.002 } };
 
-    Result r6 = { sdf->GridDistance(x,y),0.3f,1.5f,BLACK,{ 0.002,0.2,0.002 } };
+   // Result r6 = { sdf->GridDistance(x,y),0.3f,1.5f,BLACK,{ 0.002,0.2,0.002 } };
 	return UnionOp(l1, r6);
 }
 

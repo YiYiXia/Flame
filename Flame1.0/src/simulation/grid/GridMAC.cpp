@@ -93,15 +93,13 @@ void GridMAC::CalculateNodePhi()
 		{
 			Vector2d new_pos = Vector2d((i - 0.5)*cellsize[0] + start[0], (j - 0.5)*cellsize[1] + start[1]);
 			int idx = j*(size[0] + 1) + i;
-			for (int k = 0; k < polygon.size(); k++)
+			for (int k = 0; k < boundaryList.size(); k++)
 			{
-				if (polygon[k]->type == Boundary)
-				{
-					double d = -polygon[k]->Distance(new_pos).distance;
-					nodal_solid_phi[idx] = d;
+				//此处后面会动
+				double d = -boundaryList[k]->Distance(new_pos).distance;
+				nodal_solid_phi[idx] = d;
 					//if (d < 0) nodes[idx].type = SOLID;
 					//cout << d << endl;
-				}
 			}
 		}
 	}
@@ -112,15 +110,23 @@ void GridMAC::CalculateNodePhi()
 		{
 			Vector2d new_pos = Vector2d(i*cellsize[0] + start[0], j *cellsize[1] + start[1]);
 			int idx = j*size[0] + i;
-			for (int k = 0; k < polygon.size(); k++)
+			for (int k = 0; k < boundaryList.size(); k++)
 			{
-				if (polygon[k]->type == Boundary)
-				{
-					double d = -polygon[k]->Distance(new_pos).distance;
-					if (d < -0.000002) nodes[idx].type = SOLID;
-					//cout << d << endl;
-				}
+				//此处后面会动
+				double d = -boundaryList[k]->Distance(new_pos).distance;
+				if (d < -0.000002) nodes[idx].type = SOLID;
+				//if (d < 0) nodes[idx].type = SOLID;
+				//cout << d << endl;
 			}
+			//for (int k = 0; k < polygon.size(); k++)
+			//{
+			//	if (polygon[k]->type == Boundary)
+			//	{
+			//		double d = -polygon[k]->Distance(new_pos).distance;
+			//		if (d < -0.000002) nodes[idx].type = SOLID;
+			//		//cout << d << endl;
+			//	}
+			//}
 		}
 	}
 
@@ -223,20 +229,31 @@ void GridMAC::UpdateParticle()
 	}
 	for (int i = 0; i < obj->particles.size(); i++)
 	{
-		for (int k = 0; k < polygon.size(); k++)
+		for (int k = 0; k < boundaryList.size(); k++)
 		{
-			if (polygon[k]->type == Boundary)
+			double d = boundaryList[k]->Distance(obj->particles[i]->position).distance;
+			//if (d < 0) nodes[idx].type = SOLID;
+			//cout << d << endl;
+			if (d > 0.05)
 			{
-				double d = polygon[k]->Distance(obj->particles[i]->position).distance;
-				//if (d < 0) nodes[idx].type = SOLID;
-				//cout << d << endl;
-				if (d > 0.05)
-				{
-					Vector2d normal = -polygon[i]->Gradient(obj->particles[i]->position[0], obj->particles[i]->position[1]);
-					obj->particles[i]->position = obj->particles[i]->position + 1.02*normal*d;
-				}
+				Vector2d normal = -boundaryList[i]->Gradient(obj->particles[i]->position[0], obj->particles[i]->position[1]);
+				obj->particles[i]->position = obj->particles[i]->position + 1.02*normal*d;
 			}
 		}
+		//for (int k = 0; k < polygon.size(); k++)
+		//{
+		//	if (polygon[k]->type == Boundary)
+		//	{
+		//		double d = polygon[k]->Distance(obj->particles[i]->position).distance;
+		//		//if (d < 0) nodes[idx].type = SOLID;
+		//		//cout << d << endl;
+		//		if (d > 0.05)
+		//		{
+		//			Vector2d normal = -polygon[i]->Gradient(obj->particles[i]->position[0], obj->particles[i]->position[1]);
+		//			obj->particles[i]->position = obj->particles[i]->position + 1.02*normal*d;
+		//		}
+		//	}
+		//}
 		
 
 	}

@@ -6,9 +6,11 @@ SolverMPMMulti::SolverMPMMulti()
 SolverMPMMulti::~SolverMPMMulti()
 {
 }
-void SolverMPMMulti::Initial(SolverType SType)
+
+void SolverMPMMulti::SolverInitial(IntegralType SType, vector<SDFInfo>* SDFlist)
 {
 	Type = SType;
+	objList = SDFlist;
 	water = new ParticleCloudMPM();
 	grid_w = new GridMPM(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), water);
 	grid_w->InitializeMass();
@@ -18,142 +20,65 @@ void SolverMPMMulti::Initial(SolverType SType)
 	grid_s = new GridMPM(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), sand);
 	grid_s->InitializeMass();
 	grid_s->CalculateVolumes();
-	//根据场景输入信息分配信息
-	for (int i = 0; i < scene->SDFlist.size(); i++)
-	{
-		if (scene->SDFlist[i].sdf->Live_Info.AppearTime == 0)//出现时间对上
-		{
-			if (scene->SDFlist[i].stype == Boundary || scene->SDFlist[i].stype == Object) {
-				grid_w->polygon.push_back(scene->SDFlist[i].sdf);
-				grid_s->polygon.push_back(scene->SDFlist[i].sdf);
-			}
-			else if (scene->SDFlist[i].stype == ParticleBoundary)
-			{
-				ParticleCloudMPM* temp;
-				PointList list;
-				do {
-					if (scene->SDFlist[i].sdf->Sample_Type == PICTURE_P)
-					{
-						cv::Mat record = cv::imread(scene->SDFlist[i].sdf->Mat_name);
-						list = PossionDisc(r, record, scene->SDFlist[i].sdf, iteratime);
-					}
-					if (scene->SDFlist[i].sdf->Sample_Type == BOUNDSDF_P)
-					{
-						list = PossionDisc(r, scene->SDFlist[i].sdf, iteratime);
-					}
-				} while (list.size() < 20);
 
-				temp = new ParticleCloudMPM(list, scene->SDFlist[i].ptype, scene->SDFlist[i].velocity);
-				GridMPM*grid_temp;
-				grid_temp = new GridMPM(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), temp);
-				grid_temp->InitializeMass();
-				grid_temp->CalculateVolumes();
-				if (scene->SDFlist[i].ptype == WETSAND) sand->Merge(*grid_temp->obj);
-				if (scene->SDFlist[i].ptype == WATER) water->Merge(*grid_temp->obj);
-			}
+	for (int i = 0; i < (*objectList).size(); i++)
+		if ((*objectList)[i]->appearTime == 0)
+		{
+			grid_w->objectList.push_back((*objectList)[i]);
+			grid_s->objectList.push_back((*objectList)[i]);
 		}
-		
-	}
-	PointListCheck();
+	for (int i = 0; i < (*boundaryList).size(); i++)
+		if ((*boundaryList)[i]->appearTime == 0)
+		{
+			grid_w->boundaryList.push_back((*boundaryList)[i]);
+			grid_s->boundaryList.push_back((*boundaryList)[i]);
+		}
 	cohesion_w = new double[grid_s->nodes_length];
 }
 
-void SolverMPMMulti::Update()
+void SolverMPMMulti::SolverUpdate()
 {
-	for (int i = 0; i < SOLVER_STEPS; i++)
-	{
-		SourceCheck();
-		grid_s->InitializeMass();
-		grid_s->InitializeVelocities();
-		grid_s->ExplicitForce();
-		grid_w->InitializeMass();
-		grid_w->InitializeVelocities();
-		grid_w->ExplicitForce();
+	grid_s->InitializeMass();
+	grid_s->InitializeVelocities();
+	grid_s->ExplicitForce();
+	grid_w->InitializeMass();
+	grid_w->InitializeVelocities();
+	grid_w->ExplicitForce();
 
-		MomentaExchange();
-		Saturation();
-		grid_s->CollisionGrid();
-		grid_s->Friction();
-		grid_s->UpdateVelocities();
-		sand->Update();
-		grid_w->CollisionGrid();
-		grid_w->Friction();
-		grid_w->UpdateVelocities();
-		water->Update();
-		SceneControl();
-		PointListCheck();
-
-		frames++;
-	}
+	MomentaExchange();
+	Saturation();
+	grid_s->CollisionGrid();
+	grid_s->Friction();
+	grid_s->UpdateVelocities();
+	sand->Update();
+	grid_w->CollisionGrid();
+	grid_w->Friction();
+	grid_w->UpdateVelocities();
+	water->Update();
+	InformationReturn();
+}
+void SolverMPMMulti::AddParticle(vector<Vector2d> *particleList, ParticleType particleType, Vector2d particleVelocity, Vector3d particleColor)
+{
+	ParticleCloudMPM* temp;
+	temp = new ParticleCloudMPM(*particleList, particleType, particleVelocity, particleColor);
+	GridMPM*grid_temp;
+	grid_temp = new GridMPM(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), temp);
+	grid_temp->InitializeMass();
+	grid_temp->CalculateVolumes();
+	if (particleType == WETSAND) sand->Merge(*grid_temp->obj);
+	if (particleType == WATER) water->Merge(*grid_temp->obj);
+	delete(temp);
+	delete(grid_temp);
 }
 
-void SolverMPMMulti::PointListCheck()
+void SolverMPMMulti::InformationReturn()
 {
-	int psize = scene->pointlist.size();
 	int csize = sand->particles.size() + water->particles.size();
-	if (psize<csize)
-	{
-		scene->pointlist.resize(csize);
-		for (int i = 0; i < sand->particles.size(); i++)
-			scene->pointlist[i] = sand->particles[i];
-		for (int i = sand->particles.size(); i < csize; i++)
-			scene->pointlist[i] = water->particles[i- sand->particles.size()];
-	}
-}
-
-void SolverMPMMulti::SourceCheck()
-{
-	//if (frames % insert_time == 0 && frames < endtime)
-	//{
-	//	for (int i = 0; i < scene->SDFlist.size(); i++)
-	//	{
-	//		if (scene->SDFlist[i].stype == Source) {
-
-	//			ParticleCloudMPM* temp;
-	//			PointList list;
-	//			do {
-	//				list = PossionDisc(r, scene->SDFlist[i].sdf, iteratime);
-	//			} while (list.size() < 30);
-	//			cout << "Num of particle:" << list.size() << endl;
-	//			temp = new ParticleCloudMPM(list, scene->SDFlist[i].ptype, scene->SDFlist[i].velocity);
-	//			GridMPM*grid_temp;
-	//			grid_temp = new GridMPM(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), temp);
-	//			grid_temp->InitializeMass();
-	//			grid_temp->CalculateVolumes();
-	//			//cout << grid_temp->obj->particles[0]->velocity << endl;
-	//			if (scene->SDFlist[i].ptype == WETSAND) sand->Merge(*grid_temp->obj);
-	//			if (scene->SDFlist[i].ptype == WATER) water->Merge(*grid_temp->obj);
-	//		}
-	//	}
-	//}
-
-	for (int i = 0; i < scene->SDFlist.size(); i++)
-	{
-		if (scene->SDFlist[i].stype == ParticleBoundary&&frames == scene->SDFlist[i].sdf->Live_Info.AppearTime&&frames > 0)//之后插入物体，有三个条件
-		{
-			ParticleCloudMPM* temp;
-			PointList list;
-			do {
-				if (scene->SDFlist[i].sdf->Sample_Type == PICTURE_P)
-				{
-					cv::Mat record = cv::imread(scene->SDFlist[i].sdf->Mat_name);
-					list = PossionDisc(r, record, scene->SDFlist[i].sdf, iteratime);
-				}
-				if (scene->SDFlist[i].sdf->Sample_Type == BOUNDSDF_P)
-				{
-					list = PossionDisc(r, scene->SDFlist[i].sdf, iteratime);
-				}
-			} while (list.size() < 20);
-
-			temp = new ParticleCloudMPM(list, scene->SDFlist[i].ptype, scene->SDFlist[i].velocity, scene->SDFlist[i].color);
-			GridMPM*grid_temp;
-			grid_temp = new GridMPM(Vector2d(0, 0), Vector2d(VIEW_WIDTH, VIEW_HEIGHT), temp);
-			grid_temp->InitializeMass();
-			grid_temp->CalculateVolumes();
-			if (scene->SDFlist[i].ptype == WETSAND) sand->Merge(*grid_temp->obj);
-			if (scene->SDFlist[i].ptype == WATER) water->Merge(*grid_temp->obj);
-		}
-	}
+	particleList.resize(csize);
+	for (int i = 0; i < sand->particles.size(); i++)
+		particleList[i] = sand->particles[i];
+	for (int i = sand->particles.size(); i < csize; i++)
+		particleList[i] = water->particles[i - sand->particles.size()];
 }
 
 void SolverMPMMulti::MomentaExchange()

@@ -21,10 +21,23 @@
 #pragma once
 #include<opencv2/opencv.hpp>
 
+/********************************************************
+	*Class name:       UI2D
+	*Usage:            The UI of Flame
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
 class UI2D
 {
 public:
 	UI2D();
 	~UI2D();
-	void Show(cv::Mat* canvas);//Show the input canvas using OpenCV
+
+/********************************************************
+	*Function name:    Show
+	*Usage:            Show the input canvas using OpenCV
+	*Input:            canvas
+	*Output:           UI
+	*Last Update       2018.08.10 Yiming Xia
+***********************************************************/
+	void UIShow(cv::Mat* canvas);
 };

@@ -54,9 +54,6 @@
     <ClInclude Include="include\scene\Scene.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\simulation\grid\GridMAC.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="include\simulation\grid\GridMPM.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -75,19 +72,28 @@
     <ClInclude Include="include\simulation\solver\Solver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="include\simulation\solver\SolverMAC.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="include\simulation\solver\SolverMPM.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="include\simulation\solver\SolverMPMMulti.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="include\visual\UI2D.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="include\simulation\Simulator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\ParticleSample.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\geometry\SDFObject.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\solver\SolverMPMMulti.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\solver\SolverMAC.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="include\simulation\grid\GridMAC.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -125,9 +131,6 @@
     <ClCompile Include="src\scene\Scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\simulation\grid\GridMAC.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\simulation\grid\GridMPM.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -146,16 +149,7 @@
     <ClCompile Include="src\simulation\solver\Solver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\simulation\solver\SolverMPMMulti.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\simulation\solver\SolverMPM.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="src\simulation\solver\SolverMAC.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\common\Parameters.cpp">
@@ -165,6 +159,24 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="src\simulation\Simulator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\ParticleSample.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\geometry\SDFObject.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\solver\SolverMPMMulti.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\solver\SolverMAC.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="src\simulation\grid\GridMAC.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="samples\MAC.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
