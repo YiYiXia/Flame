@@ -1,0 +1,3 @@
+Gama 3
+Hardness 5000
+mass 0.5
