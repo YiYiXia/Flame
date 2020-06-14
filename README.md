@@ -18,9 +18,6 @@ A physical engine used to simulate water,snow,sand.etc
  <div style="margin-right:auto;width:600px;height:400px">
   <img width="300" height="165" src="https://github.com/YiYiXia/Flame/blob/master/Show/18.05.08-sand2.gif">
 </div>
-  <div style="margin-right:auto;width:600px;height:400px" >
- <img  width="300" height="300" src="https://github.com/YiYiXia/Flame/blob/master/Show/18.05.23-Render.gif">
-   </div>
 </div>
 
 Current developers:
